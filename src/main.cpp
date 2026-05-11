@@ -7,6 +7,8 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_internal.h>
 
+#include <windows/node_editor.h>
+
 #include <cstdio>
 #include <fstream>
 
@@ -107,6 +109,8 @@ int main() {
     initialize_glad();
     initialize_imgui(window);
 
+    const auto node_editor = NodeEditor();
+
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
@@ -122,6 +126,7 @@ int main() {
         setup_dockspace();
 
         ImGui::Begin("Node Editor");
+        node_editor.draw();
         ImGui::End();
 
         ImGui::Begin("Output");

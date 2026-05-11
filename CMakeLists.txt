@@ -16,4 +16,7 @@ add_executable(imagegraph ${source_files} ${header_files})
 target_compile_features(imagegraph PUBLIC cxx_std_20)
 target_include_directories(imagegraph PUBLIC include)
 
-target_link_libraries(imagegraph PRIVATE glfw glad glm::glm imgui)
+target_link_libraries(imagegraph PRIVATE
+        glfw glad glm::glm
+        imgui imgui_node_editor
+)

@@ -13,3 +13,12 @@ add_library(imgui STATIC
 )
 target_include_directories(imgui PUBLIC imgui imgui/backends)
 target_link_libraries(imgui PRIVATE glfw)
+
+add_library(imgui_node_editor STATIC
+        imgui-node-editor/imgui_node_editor.cpp
+        imgui-node-editor/imgui_node_editor_api.cpp
+        imgui-node-editor/imgui_canvas.cpp
+        imgui-node-editor/crude_json.cpp
+)
+target_include_directories(imgui_node_editor PUBLIC imgui-node-editor)
+target_link_libraries(imgui_node_editor PUBLIC imgui)
