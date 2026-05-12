@@ -1,0 +1,78 @@
+#include <nodes/input_node.h>
+
+#include <image/convert.h>
+#include <image/io.h>
+#include <platform/file_dialog.h>
+#include <widgets/image_preview.h>
+
+#include <misc/cpp/imgui_stdlib.h>
+
+#include <utility>
+
+namespace imagegraph::nodes {
+    InputNode::InputNode() { _output_pins.emplace_back(graph::PinType::Texture, this); }
+
+    void InputNode::draw() {
+        ax::NodeEditor::BeginNode(_id);
+        ImGui::PushID(_id.AsPointer());
+
+        ImGui::Text("Input");
+
+        ImGui::BeginGroup();
+        {
+            constexpr float total_width = 200.0f;
+            constexpr float button_width = 30.0f;
+            const float spacing = ImGui::GetStyle().ItemSpacing.x;
+
+            ImGui::PushItemWidth(total_width - button_width - spacing);
+            if (ImGui::InputText("##path", &_path, ImGuiInputTextFlags_ReadOnly)) {
+                modified();
+            }
+            ImGui::PopItemWidth();
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("...", ImVec2(button_width, 19.0f))) {
+                auto path = platform::open_image_dialog();
+                if (!path.empty()) {
+                    _path = std::move(path);
+                    modified();
+                }
+            }
+
+            const auto texture_size =
+                    ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
+            widgets::image_preview(_texture.id(), texture_size);
+        }
+        ImGui::EndGroup();
+
+        ImGui::SameLine();
+
+        ImGui::BeginGroup();
+        for (const auto& pin: _output_pins) {
+            pin.draw();
+        }
+        ImGui::EndGroup();
+
+        ImGui::PopID();
+        ax::NodeEditor::EndNode();
+    }
+
+    void InputNode::evaluate() {
+        if (_future.valid() && _future.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            const auto result = _future.get();
+
+            if (result.width() && result.height()) {
+                image::update_texture(&_texture, result);
+                _output_pins[0].set_value(&_texture);
+            }
+        }
+
+        if (!_modified || _future.valid()) {
+            return;
+        }
+        _modified = false;
+
+        _future = image::load_from_file_async(_path);
+    }
+} // namespace imagegraph::nodes

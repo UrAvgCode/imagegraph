@@ -2,12 +2,18 @@
 
 #include <GLFW/glfw3.h>
 
+#define GLFW_EXPOSE_NATIVE_WAYLAND
+#include <nfd.h>
+#include <nfd_glfw3.h>
+
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_internal.h>
 
+#include <graph/graph.h>
 #include <windows/node_editor.h>
+#include <windows/output_view.h>
 
 #include <cstdio>
 #include <fstream>
@@ -21,6 +27,17 @@ static void initialize_glfw() {
     if (!glfwInit()) {
         std::fprintf(stderr, "failed to initialize glfw\n");
         std::exit(1);
+    }
+}
+
+static void initialize_nfd() {
+    if (NFD_Init() != NFD_OKAY) {
+        std::fprintf(stderr, "failed to initialize nfd: %s\n", NFD_GetError());
+        std::exit(1);
+    }
+
+    if (!NFD_SetDisplayPropertiesFromGLFW()) {
+        std::fprintf(stderr, "set nfd display properties from glfw failed\n");
     }
 }
 
@@ -103,13 +120,16 @@ static void setup_dockspace() {
 
 int main() {
     initialize_glfw();
+    initialize_nfd();
 
     const auto window = create_window();
 
     initialize_glad();
     initialize_imgui(window);
 
-    const auto node_editor = NodeEditor();
+    auto graph = imagegraph::graph::Graph();
+    const auto node_editor = imagegraph::NodeEditor(&graph);
+    const auto output_view = imagegraph::OutputView(&graph);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -118,6 +138,8 @@ int main() {
             ImGui_ImplGlfw_Sleep(10);
             continue;
         }
+
+        graph.evaluate();
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -130,6 +152,7 @@ int main() {
         ImGui::End();
 
         ImGui::Begin("Output");
+        output_view.draw();
         ImGui::End();
 
         ImGui::Render();
@@ -148,6 +171,8 @@ int main() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+
+    NFD_Quit();
 
     glfwDestroyWindow(window);
     glfwTerminate();

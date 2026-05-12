@@ -13,3 +13,11 @@
 [submodule "external/imgui-node-editor"]
 	path = external/imgui-node-editor
 	url = https://github.com/thedmd/imgui-node-editor.git
+
+[submodule "external/nfd"]
+	path = external/nfd
+	url = https://github.com/btzy/nativefiledialog-extended.git
+
+[submodule "external/stb"]
+	path = external/stb
+	url = https://github.com/nothings/stb.git

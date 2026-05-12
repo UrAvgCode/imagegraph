@@ -19,4 +19,5 @@ target_include_directories(imagegraph PUBLIC include)
 target_link_libraries(imagegraph PRIVATE
         glfw glad glm::glm
         imgui imgui_node_editor
+        nfd stb
 )
