@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(ENABLE_WARNINGS ON)
 option(BUILD_SHARED_LIBS OFF)
 
+include(cmake/shaders.cmake)
+
 add_subdirectory(external)
 
 file(GLOB_RECURSE source_files CONFIGURE_DEPENDS src/*.cpp)
@@ -19,5 +21,5 @@ target_include_directories(imagegraph PUBLIC include)
 target_link_libraries(imagegraph PRIVATE
         glfw glad glm::glm
         imgui imgui_node_editor
-        nfd stb
+        nfd stb shader_headers
 )

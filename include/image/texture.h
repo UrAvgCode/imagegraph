@@ -20,6 +20,9 @@ namespace imagegraph::image {
         void bind(GLuint unit) const;
         static void unbind(GLuint unit);
 
+        void bind_image(GLuint unit, GLenum access) const;
+        static void unbind_image(GLuint unit);
+
         GLuint id() const;
         GLsizei width() const;
         GLsizei height() const;

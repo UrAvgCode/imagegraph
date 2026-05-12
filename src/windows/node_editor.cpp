@@ -1,5 +1,6 @@
 #include <windows/node_editor.h>
 
+#include <nodes/brightness_contrast_node.h>
 #include <nodes/input_node.h>
 #include <nodes/output_node.h>
 
@@ -84,6 +85,8 @@ namespace imagegraph {
                 new_node = _graph->add_node(std::make_unique<nodes::InputNode>());
             } else if (ImGui::MenuItem("Output")) {
                 new_node = _graph->add_node(std::make_unique<nodes::OutputNode>());
+            } else if (ImGui::MenuItem("Brightness/Contrast")) {
+                new_node = _graph->add_node(std::make_unique<nodes::BrightnessContrastNode>());
             }
 
             if (new_node) {

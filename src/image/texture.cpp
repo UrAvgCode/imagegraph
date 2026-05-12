@@ -62,6 +62,14 @@ namespace imagegraph::image {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    void Texture::bind_image(const GLuint unit, const GLenum access) const {
+        glBindImageTexture(unit, _texture, 0, GL_FALSE, 0, access, GL_RGBA32F);
+    }
+
+    void Texture::unbind_image(const GLuint unit) {
+        glBindImageTexture(unit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    }
+
     GLuint Texture::id() const { return _texture; }
 
     GLsizei Texture::width() const { return _width; }
