@@ -12,6 +12,7 @@
 #include <imgui_internal.h>
 
 #include <graph/graph.h>
+#include <windows/main_menu_bar.h>
 #include <windows/node_editor.h>
 #include <windows/output_view.h>
 
@@ -128,8 +129,9 @@ int main() {
     initialize_imgui(window);
 
     auto graph = imagegraph::graph::Graph();
-    const auto node_editor = imagegraph::NodeEditor(&graph);
+    auto node_editor = imagegraph::NodeEditor(&graph);
     const auto output_view = imagegraph::OutputView(&graph);
+    const auto main_menu_bar = imagegraph::MainMenuBar(&node_editor);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -145,6 +147,7 @@ int main() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        main_menu_bar.draw();
         setup_dockspace();
 
         ImGui::Begin("Node Editor");

@@ -2,6 +2,7 @@ add_subdirectory(glfw)
 add_subdirectory(glad)
 add_subdirectory(glm)
 add_subdirectory(nfd)
+add_subdirectory(json)
 
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE stb)

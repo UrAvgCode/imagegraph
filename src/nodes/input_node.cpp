@@ -75,4 +75,13 @@ namespace imagegraph::nodes {
 
         _future = image::load_from_file_async(_path);
     }
+
+    nlohmann::json InputNode::serialize() const { return {{"path", _path}}; }
+
+    void InputNode::deserialize(const nlohmann::json& json) {
+        if (json.contains("path") && json["path"].is_string()) {
+            _path = json["path"].get<std::string>();
+        }
+        modified();
+    }
 } // namespace imagegraph::nodes

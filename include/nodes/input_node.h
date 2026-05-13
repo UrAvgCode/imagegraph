@@ -15,6 +15,9 @@ namespace imagegraph::nodes {
         void draw() override;
         void evaluate() override;
 
+        nlohmann::json serialize() const override;
+        void deserialize(const nlohmann::json&) override;
+
     private:
         std::string _path;
         image::Texture _texture;

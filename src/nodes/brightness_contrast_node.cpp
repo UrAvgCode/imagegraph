@@ -98,4 +98,18 @@ namespace imagegraph::nodes {
 
         _output_pins[0].set_value(&_texture);
     }
+
+    nlohmann::json BrightnessContrastNode::serialize() const {
+        return {{"brightness", _brightness}, {"contrast", _contrast}};
+    }
+
+    void BrightnessContrastNode::deserialize(const nlohmann::json& json) {
+        if (json.contains("brightness") && json["brightness"].is_number()) {
+            _brightness = json["brightness"].get<float>();
+        }
+        if (json.contains("contrast") && json["contrast"].is_number()) {
+            _contrast = json["contrast"].get<float>();
+        }
+        modified();
+    }
 } // namespace imagegraph::nodes

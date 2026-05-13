@@ -4,6 +4,7 @@
 #include <stb_image_resize2.h>
 
 #include <cassert>
+#include <utility>
 
 namespace imagegraph::image {
     Image::Image() : _width(0), _height(0), _channels(0) {}

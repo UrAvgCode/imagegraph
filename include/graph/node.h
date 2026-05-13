@@ -4,6 +4,8 @@
 
 #include <imgui_node_editor.h>
 
+#include <nlohmann/json.hpp>
+
 #include <span>
 #include <vector>
 
@@ -21,6 +23,9 @@ namespace imagegraph::graph {
 
         virtual void draw() = 0;
         virtual void evaluate() = 0;
+
+        virtual nlohmann::json serialize() const = 0;
+        virtual void deserialize(const nlohmann::json &) = 0;
 
         void modified();
 

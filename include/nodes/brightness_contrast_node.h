@@ -12,6 +12,9 @@ namespace imagegraph::nodes {
         void draw() override;
         void evaluate() override;
 
+        nlohmann::json serialize() const override;
+        void deserialize(const nlohmann::json&) override;
+
     private:
         float _brightness;
         float _contrast;

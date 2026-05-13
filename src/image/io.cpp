@@ -13,16 +13,16 @@
 #include <vector>
 
 namespace imagegraph::image {
-    Image load_from_file(const char* path) {
+    Image load_from_file(const std::filesystem::path& path) {
         int width = 0;
         int height = 0;
         int channels = 0;
 
         stbi_ldr_to_hdr_scale(1.0f);
         stbi_ldr_to_hdr_gamma(1.0f);
-        const auto data = stbi_loadf(path, &width, &height, &channels, STBI_rgb_alpha);
+        const auto data = stbi_loadf(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
         if (!data) {
-            std::fprintf(stderr, "failed to load image: %s (%s)\n", path, stbi_failure_reason());
+            std::fprintf(stderr, "failed to load image: %s (%s)\n", path.c_str(), stbi_failure_reason());
             return {};
         }
 
@@ -32,15 +32,13 @@ namespace imagegraph::image {
         return result;
     }
 
-    std::future<Image> load_from_file_async(std::string path) {
-        return std::async(std::launch::async, [path = std::move(path)] { return load_from_file(path.c_str()); });
+    std::future<Image> load_from_file_async(std::filesystem::path path) {
+        return std::async(std::launch::async, load_from_file, std::move(path));
     }
 
-    void save_to_file(const Image& image, const char* path) {
-        const auto path_view = std::string_view(path);
-
-        if (path_view.ends_with(".hdr")) {
-            stbi_write_hdr(path, image.width(), image.height(), image.channels(), image.data());
+    void save_to_file(const Image& image, const std::filesystem::path& path) {
+        if (path.extension() == ".hdr") {
+            stbi_write_hdr(path.c_str(), image.width(), image.height(), image.channels(), image.data());
             return;
         }
 
@@ -50,27 +48,27 @@ namespace imagegraph::image {
             data[i] = static_cast<std::uint8_t>(std::lround(value * 255.0f));
         }
 
-        if (path_view.ends_with(".jpg") || path_view.ends_with(".jpeg")) {
+        if (path.extension() == ".jpg" || path.extension() == ".jpeg") {
             constexpr int quality = 95;
-            stbi_write_jpg(path, image.width(), image.height(), image.channels(), data.data(), quality);
+            stbi_write_jpg(path.c_str(), image.width(), image.height(), image.channels(), data.data(), quality);
             return;
         }
 
-        if (path_view.ends_with(".bmp")) {
-            stbi_write_bmp(path, image.width(), image.height(), image.channels(), data.data());
+        if (path.extension() == ".bmp") {
+            stbi_write_bmp(path.c_str(), image.width(), image.height(), image.channels(), data.data());
             return;
         }
 
-        if (path_view.ends_with(".tga")) {
-            stbi_write_tga(path, image.width(), image.height(), image.channels(), data.data());
+        if (path.extension() == ".tga") {
+            stbi_write_tga(path.c_str(), image.width(), image.height(), image.channels(), data.data());
             return;
         }
 
         const auto stride = static_cast<int>(image.width() * image.channels() * sizeof(std::uint8_t));
-        stbi_write_png(path, image.width(), image.height(), image.channels(), data.data(), stride);
+        stbi_write_png(path.c_str(), image.width(), image.height(), image.channels(), data.data(), stride);
     }
 
-    void save_to_file_async(Image image, std::string path) {
-        std::thread([image = std::move(image), path = std::move(path)] { save_to_file(image, path.c_str()); }).detach();
+    void save_to_file_async(Image image, std::filesystem::path path) {
+        std::thread(save_to_file, std::move(image), std::move(path)).detach();
     }
 } // namespace imagegraph::image

@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 namespace imagegraph {
     OutputView::OutputView(graph::Graph* graph) : _graph(graph) {}

@@ -68,6 +68,14 @@ namespace imagegraph::nodes {
         }
     }
 
+    nlohmann::json OutputNode::serialize() const { return {{"name", _name}}; }
+
+    void OutputNode::deserialize(const nlohmann::json& json) {
+        if (json.contains("name") && json["name"].is_string()) {
+            _name = json["name"].get<std::string>();
+        }
+    }
+
     const std::string& OutputNode::name() const { return _name; }
 
     const image::Texture* OutputNode::texture() const { return std::get<image::Texture*>(_input_pins[0].get_value()); }

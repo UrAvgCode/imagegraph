@@ -4,6 +4,11 @@
 #include <nodes/input_node.h>
 #include <nodes/output_node.h>
 
+#include <utility>
+#include <memory>
+#include <string>
+#include <unordered_map>
+
 namespace imagegraph {
     NodeEditor::NodeEditor(graph::Graph* graph) : _graph(graph) {
         auto config = ax::NodeEditor::Config();
@@ -38,6 +43,144 @@ namespace imagegraph {
 
         ax::NodeEditor::End();
         ax::NodeEditor::SetCurrentEditor(nullptr);
+    }
+
+    nlohmann::json NodeEditor::serialize() const {
+        ax::NodeEditor::SetCurrentEditor(_context);
+
+        auto json = nlohmann::json();
+
+        auto node_ids = std::unordered_map<graph::Node*, int>();
+        node_ids.reserve(_graph->nodes().size());
+
+        int id = 0;
+        for (const auto node: _graph->nodes()) {
+            node_ids[node] = id++;
+
+            auto node_type_name = std::string();
+            if (dynamic_cast<nodes::InputNode*>(node)) {
+                node_type_name = "input";
+            } else if (dynamic_cast<nodes::OutputNode*>(node)) {
+                node_type_name = "output";
+            } else if (dynamic_cast<nodes::BrightnessContrastNode*>(node)) {
+                node_type_name = "brightness_contrast";
+            }
+
+            auto position = ax::NodeEditor::GetNodePosition(node->id());
+
+            json["nodes"].push_back({{"id", node_ids[node]},
+                                     {"type", node_type_name},
+                                     {"x", position.x},
+                                     {"y", position.y},
+                                     {"data", node->serialize()}});
+        }
+
+        for (const auto node: _graph->nodes()) {
+            auto input_pins = node->input_pins();
+            for (int input_index = 0; input_index < input_pins.size(); ++input_index) {
+                auto& input_pin = input_pins[input_index];
+
+                const auto output_pin = input_pin.output_pin();
+                if (!output_pin) {
+                    continue;
+                }
+
+                auto output_node = output_pin->owner();
+                auto output_index = static_cast<int>(output_pin - output_node->output_pins().data());
+
+                json["links"].push_back({{"from_node", node_ids[output_node]},
+                                         {"from_pin", output_index},
+                                         {"to_node", node_ids[node]},
+                                         {"to_pin", input_index}});
+            }
+        }
+
+        ax::NodeEditor::SetCurrentEditor(nullptr);
+        return json;
+    }
+
+    void NodeEditor::deserialize(const nlohmann::json& json) const {
+        if (!json.contains("nodes") || !json["nodes"].is_array()) {
+            return;
+        }
+
+        _graph->clear_nodes();
+        auto id_map = std::unordered_map<int, graph::Node*>();
+
+        ax::NodeEditor::SetCurrentEditor(_context);
+        for (auto& json_node: json["nodes"]) {
+            if (!json_node.contains("type")) {
+                continue;
+            }
+
+            const auto& type = json_node["type"];
+            if (!type.is_string()) {
+                continue;
+            }
+
+            const auto type_str = type.get<std::string>();
+            auto node = std::unique_ptr<graph::Node>();
+            if (type_str == "input") {
+                node = std::make_unique<nodes::InputNode>();
+            } else if (type_str == "output") {
+                node = std::make_unique<nodes::OutputNode>();
+            } else if (type_str == "brightness_contrast") {
+                node = std::make_unique<nodes::BrightnessContrastNode>();
+            }
+
+            if (!node) {
+                continue;
+            }
+
+            if (json_node.contains("x") && json_node.contains("y") && json_node["x"].is_number() &&
+                json_node["y"].is_number()) {
+                auto position = ImVec2(json_node["x"].get<float>(), json_node["y"].get<float>());
+                ax::NodeEditor::SetNodePosition(node->id(), position);
+            }
+
+            if (json_node.contains("data") && json_node["data"].is_object()) {
+                node->deserialize(json_node["data"]);
+            }
+
+            const auto node_ptr = _graph->add_node(std::move(node));
+
+            if (json_node.contains("id") && json_node["id"].is_number_integer()) {
+                id_map.emplace(json_node["id"].get<int>(), node_ptr);
+            }
+        }
+        ax::NodeEditor::SetCurrentEditor(nullptr);
+
+        if (!json.contains("links") || !json["links"].is_array()) {
+            return;
+        }
+
+        for (auto& link: json["links"]) {
+            if (!link.contains("from_node") || !link.contains("to_node") || !link.contains("from_pin") ||
+                !link.contains("to_pin")) {
+                continue;
+            }
+
+            if (!link["from_node"].is_number_integer() || !link["to_node"].is_number_integer() ||
+                !link["from_pin"].is_number_unsigned() || !link["to_pin"].is_number_unsigned()) {
+                continue;
+            }
+
+            const auto from_node = id_map[link["from_node"].get<int>()];
+            const auto to_node = id_map[link["to_node"].get<int>()];
+            if (!from_node || !to_node) {
+                continue;
+            }
+
+            const auto from_pin = link["from_pin"].get<std::size_t>();
+            const auto to_pin = link["to_pin"].get<std::size_t>();
+            if (from_pin >= from_node->output_pins().size() || to_pin >= to_node->input_pins().size()) {
+                continue;
+            }
+
+            const auto output_pin = &from_node->output_pins()[from_pin];
+            const auto input_pin = &to_node->input_pins()[to_pin];
+            _graph->add_link(output_pin, input_pin);
+        }
     }
 
     void NodeEditor::handle_creation_action() const {
