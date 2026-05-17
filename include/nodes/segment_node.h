@@ -23,7 +23,7 @@ namespace imagegraph::nodes {
 
     static_assert(sizeof(DecoderInputs) == sizeof(Ort::Value) * 7);
 
-    class SegmentNode : public graph::Node {
+    class SegmentNode final : public graph::Node {
     public:
         SegmentNode();
 

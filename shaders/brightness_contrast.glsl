@@ -17,9 +17,6 @@ void main() {
     }
 
     vec4 color = imageLoad(u_input, texel);
-
     color.rgb = (color.rgb - 0.5) * u_contrast + 0.5 + u_brightness;
-    color.rgb = clamp(color.rgb, 0.0, 1.0);
-
     imageStore(u_output, texel, color);
 }

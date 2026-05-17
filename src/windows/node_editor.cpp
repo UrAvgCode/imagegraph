@@ -1,6 +1,7 @@
 #include <windows/node_editor.h>
 
 #include <nodes/brightness_contrast_node.h>
+#include <nodes/color_intensity_node.h>
 #include <nodes/depth_node.h>
 #include <nodes/input_node.h>
 #include <nodes/output_node.h>
@@ -66,6 +67,8 @@ namespace imagegraph {
                 node_type_name = "output";
             } else if (dynamic_cast<nodes::BrightnessContrastNode*>(node)) {
                 node_type_name = "brightness_contrast";
+            } else if (dynamic_cast<nodes::ColorIntensityNode*>(node)) {
+                node_type_name = "color_intensity";
             } else if (dynamic_cast<nodes::DepthNode*>(node)) {
                 node_type_name = "depth";
             } else if (dynamic_cast<nodes::SegmentNode*>(node)) {
@@ -132,6 +135,8 @@ namespace imagegraph {
                 node = std::make_unique<nodes::OutputNode>();
             } else if (type_str == "brightness_contrast") {
                 node = std::make_unique<nodes::BrightnessContrastNode>();
+            } else if (type_str == "color_intensity") {
+                node = std::make_unique<nodes::ColorIntensityNode>();
             } else if (type_str == "depth") {
                 node = std::make_unique<nodes::DepthNode>();
             } else if (type == "segment") {
@@ -236,20 +241,27 @@ namespace imagegraph {
 
             if (ImGui::MenuItem("Input")) {
                 new_node = _graph->add_node(std::make_unique<nodes::InputNode>());
-            } else if (ImGui::MenuItem("Output")) {
+            }
+            if (ImGui::MenuItem("Output")) {
                 new_node = _graph->add_node(std::make_unique<nodes::OutputNode>());
-            } else if (ImGui::MenuItem("Brightness/Contrast")) {
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Brightness/Contrast")) {
                 new_node = _graph->add_node(std::make_unique<nodes::BrightnessContrastNode>());
-            } else if (ImGui::MenuItem("Depth")) {
+            }
+            if (ImGui::MenuItem("Color Intensity")) {
+                new_node = _graph->add_node(std::make_unique<nodes::ColorIntensityNode>());
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Depth")) {
                 new_node = _graph->add_node(std::make_unique<nodes::DepthNode>());
-            } else if (ImGui::MenuItem("Segment")) {
+            }
+            if (ImGui::MenuItem("Segment")) {
                 new_node = _graph->add_node(std::make_unique<nodes::SegmentNode>());
             }
 
             if (new_node) {
                 ax::NodeEditor::SetNodePosition(new_node->id(), open_popup_position);
-
-                ax::NodeEditor::GetNodePosition(new_node->id());
             }
 
             ImGui::EndPopup();

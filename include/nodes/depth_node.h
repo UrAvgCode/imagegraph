@@ -9,7 +9,7 @@
 #include <future>
 
 namespace imagegraph::nodes {
-    class DepthNode : public graph::Node {
+    class DepthNode final : public graph::Node {
     public:
         DepthNode();
 
