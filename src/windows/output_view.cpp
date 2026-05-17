@@ -1,6 +1,6 @@
 #include <windows/output_view.h>
 
-#include <image/convert.h>
+#include <compute/transfer.h>
 #include <image/io.h>
 #include <nodes/output_node.h>
 #include <platform/file_dialog.h>
@@ -28,7 +28,7 @@ namespace imagegraph {
                         if (texture && texture->id()) {
                             auto path = platform::save_image_dialog();
                             if (!path.empty()) {
-                                auto image = image::read_texture(*texture);
+                                auto image = compute::download_texture(texture);
                                 image::save_to_file_async(std::move(image), std::move(path));
                             }
                         }

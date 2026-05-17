@@ -1,7 +1,7 @@
 #pragma once
 
+#include <compute/texture.h>
 #include <image/image.h>
-#include <image/texture.h>
 
 #include <imgui_node_editor.h>
 
@@ -13,7 +13,7 @@ namespace imagegraph::graph {
     class OutputPin;
 
     enum class PinType { Texture, ImageData };
-    using Value = std::variant<image::Texture*, image::Image*>;
+    using Value = std::variant<compute::Texture*, image::Image*>;
 
     class Pin {
     public:

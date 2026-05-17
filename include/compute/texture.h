@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-namespace imagegraph::image {
+namespace imagegraph::compute {
     class Texture {
     public:
         Texture();
@@ -32,4 +32,4 @@ namespace imagegraph::image {
         GLsizei _width;
         GLsizei _height;
     };
-} // namespace imagegraph::image
+} // namespace imagegraph::compute

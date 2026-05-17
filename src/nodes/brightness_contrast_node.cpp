@@ -68,9 +68,9 @@ namespace imagegraph::nodes {
         }
         _modified = false;
 
-        const auto input_texture = std::get<image::Texture*>(_input_pins[0].get_value());
+        const auto input_texture = std::get<compute::Texture*>(_input_pins[0].get_value());
         if (!input_texture || input_texture->id() == 0) {
-            _texture = image::Texture();
+            _texture = compute::Texture();
             _output_pins[0].set_value({});
             return;
         }
@@ -92,9 +92,9 @@ namespace imagegraph::nodes {
 
         _compute_program.dispatch(width, height);
 
-        process::ComputeProgram::unbind();
-        image::Texture::unbind_image(0);
-        image::Texture::unbind_image(1);
+        compute::ComputeProgram::unbind();
+        compute::Texture::unbind_image(0);
+        compute::Texture::unbind_image(1);
 
         _output_pins[0].set_value(&_texture);
     }

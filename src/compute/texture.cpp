@@ -1,6 +1,6 @@
-#include <image/texture.h>
+#include <compute/texture.h>
 
-namespace imagegraph::image {
+namespace imagegraph::compute {
     Texture::Texture() : _texture(0), _width(0), _height(0) {}
 
     Texture::~Texture() {
@@ -75,4 +75,4 @@ namespace imagegraph::image {
     GLsizei Texture::width() const { return _width; }
 
     GLsizei Texture::height() const { return _height; }
-} // namespace imagegraph::image
+} // namespace imagegraph::compute

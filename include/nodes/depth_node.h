@@ -1,13 +1,17 @@
 #pragma once
 
-#include <compute/compute_program.h>
 #include <compute/texture.h>
 #include <graph/node.h>
+#include <image/image.h>
+
+#include <onnxruntime/onnxruntime_cxx_api.h>
+
+#include <future>
 
 namespace imagegraph::nodes {
-    class BrightnessContrastNode final : public graph::Node {
+    class DepthNode : public graph::Node {
     public:
-        BrightnessContrastNode();
+        DepthNode();
 
         void draw() override;
         void evaluate() override;
@@ -16,10 +20,15 @@ namespace imagegraph::nodes {
         void deserialize(const nlohmann::json&) override;
 
     private:
-        float _brightness;
-        float _contrast;
-
         compute::Texture _texture;
-        compute::ComputeProgram _compute_program;
+
+        Ort::Env _env;
+        Ort::Session _session;
+
+        std::string _input_name;
+        std::string _output_name;
+
+        std::future<image::Image> _future;
+        bool _processing;
     };
 } // namespace imagegraph::nodes

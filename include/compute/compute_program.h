@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-namespace imagegraph::process {
+namespace imagegraph::compute {
     class ComputeProgram {
     public:
         ComputeProgram();
@@ -103,4 +103,4 @@ namespace imagegraph::process {
         GLuint _program;
         glm::uvec3 _local_size;
     };
-} // namespace imagegraph::process
+} // namespace imagegraph::compute

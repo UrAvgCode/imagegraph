@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(ENABLE_WARNINGS ON)
 option(BUILD_SHARED_LIBS OFF)
 
+find_package(onnxruntime REQUIRED)
+
+include(cmake/models.cmake)
 include(cmake/shaders.cmake)
 
 add_subdirectory(external)
@@ -23,4 +26,5 @@ target_link_libraries(imagegraph PRIVATE
         imgui imgui_node_editor
         nfd stb nlohmann_json::nlohmann_json
         shader_headers
+        onnxruntime
 )

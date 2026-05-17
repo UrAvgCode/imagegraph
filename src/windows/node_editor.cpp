@@ -1,13 +1,14 @@
 #include <windows/node_editor.h>
 
 #include <nodes/brightness_contrast_node.h>
+#include <nodes/depth_node.h>
 #include <nodes/input_node.h>
 #include <nodes/output_node.h>
 
-#include <utility>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 namespace imagegraph {
     NodeEditor::NodeEditor(graph::Graph* graph) : _graph(graph) {
@@ -64,6 +65,8 @@ namespace imagegraph {
                 node_type_name = "output";
             } else if (dynamic_cast<nodes::BrightnessContrastNode*>(node)) {
                 node_type_name = "brightness_contrast";
+            } else if (dynamic_cast<nodes::DepthNode*>(node)) {
+                node_type_name = "depth";
             }
 
             auto position = ax::NodeEditor::GetNodePosition(node->id());
@@ -126,6 +129,8 @@ namespace imagegraph {
                 node = std::make_unique<nodes::OutputNode>();
             } else if (type_str == "brightness_contrast") {
                 node = std::make_unique<nodes::BrightnessContrastNode>();
+            } else if (type_str == "depth") {
+                node = std::make_unique<nodes::DepthNode>();
             }
 
             if (!node) {
@@ -230,6 +235,8 @@ namespace imagegraph {
                 new_node = _graph->add_node(std::make_unique<nodes::OutputNode>());
             } else if (ImGui::MenuItem("Brightness/Contrast")) {
                 new_node = _graph->add_node(std::make_unique<nodes::BrightnessContrastNode>());
+            } else if (ImGui::MenuItem("Depth")) {
+                new_node = _graph->add_node(std::make_unique<nodes::DepthNode>());
             }
 
             if (new_node) {

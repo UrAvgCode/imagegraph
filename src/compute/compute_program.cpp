@@ -1,4 +1,4 @@
-#include <process/compute_program.h>
+#include <compute/compute_program.h>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -58,7 +58,7 @@ namespace {
     }
 } // namespace
 
-namespace imagegraph::process {
+namespace imagegraph::compute {
     ComputeProgram::ComputeProgram() : _program(0), _local_size(1, 1, 1) {}
 
     ComputeProgram::~ComputeProgram() {

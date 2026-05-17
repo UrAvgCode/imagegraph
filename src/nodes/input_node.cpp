@@ -1,6 +1,6 @@
 #include <nodes/input_node.h>
 
-#include <image/convert.h>
+#include <compute/transfer.h>
 #include <image/io.h>
 #include <platform/file_dialog.h>
 #include <widgets/image_preview.h>
@@ -63,7 +63,7 @@ namespace imagegraph::nodes {
             const auto result = _future.get();
 
             if (result.width() && result.height()) {
-                image::update_texture(&_texture, result);
+                compute::upload_image(result, &_texture);
                 _output_pins[0].set_value(&_texture);
             }
         }

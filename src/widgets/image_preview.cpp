@@ -35,8 +35,8 @@ namespace imagegraph::widgets {
         }
 
         const auto style = ImGui::GetStyle();
-
         const auto padding = ImVec2(style.ImageBorderSize, style.ImageBorderSize);
+
         const auto bounding_box = ImRect(window->DC.CursorPos, window->DC.CursorPos + widget_size + padding * 2.0f);
         ImGui::ItemSize(bounding_box);
         if (!ImGui::ItemAdd(bounding_box, 0))

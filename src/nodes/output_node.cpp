@@ -78,7 +78,9 @@ namespace imagegraph::nodes {
 
     const std::string& OutputNode::name() const { return _name; }
 
-    const image::Texture* OutputNode::texture() const { return std::get<image::Texture*>(_input_pins[0].get_value()); }
+    const compute::Texture* OutputNode::texture() const {
+        return std::get<compute::Texture*>(_input_pins[0].get_value());
+    }
 
     void OutputNode::fit_to_canvas(const ImVec2 canvas_size) {
         const auto output_texture = texture();

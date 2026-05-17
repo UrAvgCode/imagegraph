@@ -13,7 +13,7 @@ namespace imagegraph {
         void draw() const;
 
         nlohmann::json serialize() const;
-        void deserialize(const nlohmann::json &) const;
+        void deserialize(const nlohmann::json&) const;
 
     private:
         void handle_creation_action() const;

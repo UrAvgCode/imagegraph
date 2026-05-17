@@ -1,7 +1,7 @@
 #pragma once
 
+#include <compute/texture.h>
 #include <graph/node.h>
-#include <image/texture.h>
 
 #include <string>
 
@@ -17,7 +17,7 @@ namespace imagegraph::nodes {
         void deserialize(const nlohmann::json&) override;
 
         const std::string& name() const;
-        const image::Texture* texture() const;
+        const compute::Texture* texture() const;
 
         void fit_to_canvas(ImVec2);
         bool consume_fit_request();
