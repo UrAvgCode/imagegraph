@@ -24,3 +24,13 @@ download_model(
         "${model_dir}/depth_anything.onnx"
         "https://github.com/fabio-sim/Depth-Anything-ONNX/releases/download/v2.0.0/depth_anything_v2_vitb.onnx"
 )
+
+download_model(
+        "${model_dir}/segment_anything_encoder.onnx"
+        "https://huggingface.co/vietanhdev/segment-anything-2-onnx-models/resolve/main/sam2_hiera_base_plus.encoder.onnx?download=true"
+)
+
+download_model(
+        "${model_dir}/segment_anything_decoder.onnx"
+        "https://huggingface.co/vietanhdev/segment-anything-2-onnx-models/resolve/main/sam2_hiera_base_plus.decoder.onnx?download=true"
+)

@@ -4,6 +4,7 @@
 #include <nodes/depth_node.h>
 #include <nodes/input_node.h>
 #include <nodes/output_node.h>
+#include <nodes/segment_node.h>
 
 #include <memory>
 #include <string>
@@ -67,6 +68,8 @@ namespace imagegraph {
                 node_type_name = "brightness_contrast";
             } else if (dynamic_cast<nodes::DepthNode*>(node)) {
                 node_type_name = "depth";
+            } else if (dynamic_cast<nodes::SegmentNode*>(node)) {
+                node_type_name = "segment";
             }
 
             auto position = ax::NodeEditor::GetNodePosition(node->id());
@@ -131,6 +134,8 @@ namespace imagegraph {
                 node = std::make_unique<nodes::BrightnessContrastNode>();
             } else if (type_str == "depth") {
                 node = std::make_unique<nodes::DepthNode>();
+            } else if (type == "segment") {
+                node = std::make_unique<nodes::SegmentNode>();
             }
 
             if (!node) {
@@ -237,6 +242,8 @@ namespace imagegraph {
                 new_node = _graph->add_node(std::make_unique<nodes::BrightnessContrastNode>());
             } else if (ImGui::MenuItem("Depth")) {
                 new_node = _graph->add_node(std::make_unique<nodes::DepthNode>());
+            } else if (ImGui::MenuItem("Segment")) {
+                new_node = _graph->add_node(std::make_unique<nodes::SegmentNode>());
             }
 
             if (new_node) {
