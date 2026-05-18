@@ -153,7 +153,7 @@ namespace imagegraph::graph {
 
         for (const auto& node: _nodes) {
             for (const auto& input_pin: node->input_pins()) {
-                if (input_pin.is_connected()) {
+                if (input_pin.output_pin()) {
                     indegree[node.get()]++;
                 }
             }

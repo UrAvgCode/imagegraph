@@ -17,7 +17,7 @@ namespace imagegraph::graph {
 
     class Pin {
     public:
-        explicit Pin(ax::NodeEditor::PinKind, PinType, Node*);
+        explicit Pin(ax::NodeEditor::PinKind, PinType, Node*, const char*);
         virtual ~Pin() = default;
 
         Pin(const Pin&) = delete;
@@ -26,31 +26,31 @@ namespace imagegraph::graph {
         Pin(Pin&&) = default;
         Pin& operator=(Pin&&) = default;
 
-        void draw() const;
+        virtual void draw() const = 0;
 
         ax::NodeEditor::PinId id() const;
         ax::NodeEditor::PinKind kind() const;
         PinType type() const;
         Node* owner() const;
 
-        virtual bool is_connected() const = 0;
-
     protected:
         ax::NodeEditor::PinId _id;
         ax::NodeEditor::PinKind _kind;
         PinType _type;
         Node* _owner;
+        const char* _name;
     };
 
     class InputPin final : public Pin {
     public:
-        explicit InputPin(PinType, Node*);
+        explicit InputPin(PinType, Node*, const char* = nullptr);
+
+        void draw() const override;
 
         Value get_value() const;
 
         void connect(OutputPin*);
         void disconnect();
-        bool is_connected() const override;
 
         OutputPin* output_pin() const;
         ax::NodeEditor::LinkId link_id() const;
@@ -62,14 +62,15 @@ namespace imagegraph::graph {
 
     class OutputPin final : public Pin {
     public:
-        explicit OutputPin(PinType, Node*);
+        explicit OutputPin(PinType, Node*, const char* = nullptr);
+
+        void draw() const override;
 
         void set_value(Value);
         Value get_value() const;
 
         void connect(InputPin*);
         void disconnect(InputPin*);
-        bool is_connected() const override;
 
         std::unordered_set<InputPin*> connections() const;
 

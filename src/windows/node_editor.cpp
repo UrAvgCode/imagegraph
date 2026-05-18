@@ -1,5 +1,6 @@
 #include <windows/node_editor.h>
 
+#include <nodes/blend_node.h>
 #include <nodes/brightness_contrast_node.h>
 #include <nodes/color_intensity_node.h>
 #include <nodes/depth_node.h>
@@ -31,7 +32,7 @@ namespace imagegraph {
 
         for (const auto node: _graph->nodes()) {
             for (const auto& input_pin: node->input_pins()) {
-                if (input_pin.is_connected()) {
+                if (input_pin.output_pin()) {
                     const auto link_id = input_pin.link_id();
                     const auto input_pin_id = input_pin.id();
                     const auto output_pin_id = input_pin.output_pin()->id();
@@ -69,6 +70,8 @@ namespace imagegraph {
                 node_type_name = "brightness_contrast";
             } else if (dynamic_cast<nodes::ColorIntensityNode*>(node)) {
                 node_type_name = "color_intensity";
+            } else if (dynamic_cast<nodes::BlendNode*>(node)) {
+                node_type_name = "blend";
             } else if (dynamic_cast<nodes::DepthNode*>(node)) {
                 node_type_name = "depth";
             } else if (dynamic_cast<nodes::SegmentNode*>(node)) {
@@ -137,6 +140,8 @@ namespace imagegraph {
                 node = std::make_unique<nodes::BrightnessContrastNode>();
             } else if (type_str == "color_intensity") {
                 node = std::make_unique<nodes::ColorIntensityNode>();
+            } else if (type_str == "blend") {
+                node = std::make_unique<nodes::BlendNode>();
             } else if (type_str == "depth") {
                 node = std::make_unique<nodes::DepthNode>();
             } else if (type == "segment") {
@@ -251,6 +256,10 @@ namespace imagegraph {
             }
             if (ImGui::MenuItem("Color Intensity")) {
                 new_node = _graph->add_node(std::make_unique<nodes::ColorIntensityNode>());
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Blend")) {
+                new_node = _graph->add_node(std::make_unique<nodes::BlendNode>());
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Depth")) {

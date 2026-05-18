@@ -53,14 +53,8 @@ namespace {
 } // namespace
 
 namespace imagegraph::graph {
-    Pin::Pin(const ax::NodeEditor::PinKind kind, const PinType type, Node* owner) :
-        _id(generate_unique_pin_id()), _kind(kind), _type(type), _owner(owner) {}
-
-    void Pin::draw() const {
-        ax::NodeEditor::BeginPin(_id, _kind);
-        draw_pin_icon(ImVec2(24, 24), _type, is_connected());
-        ax::NodeEditor::EndPin();
-    }
+    Pin::Pin(const ax::NodeEditor::PinKind kind, const PinType type, Node* owner, const char* name) :
+        _id(generate_unique_pin_id()), _kind(kind), _type(type), _owner(owner), _name(name) {}
 
     ax::NodeEditor::PinId Pin::id() const { return _id; }
 
@@ -72,8 +66,23 @@ namespace imagegraph::graph {
 } // namespace imagegraph::graph
 
 namespace imagegraph::graph {
-    InputPin::InputPin(const PinType type, Node* owner) :
-        Pin(ax::NodeEditor::PinKind::Input, type, owner), _output_pin(nullptr) {}
+    InputPin::InputPin(const PinType type, Node* owner, const char* name) :
+        Pin(ax::NodeEditor::PinKind::Input, type, owner, name), _output_pin(nullptr) {}
+
+    void InputPin::draw() const {
+        constexpr float icon_size = 24.0f;
+
+        ax::NodeEditor::BeginPin(_id, _kind);
+        draw_pin_icon(ImVec2(icon_size, icon_size), _type, _output_pin);
+        ax::NodeEditor::EndPin();
+
+        if (_name) {
+            ImGui::SameLine(0.0f, 0.0f);
+            const float text_height = ImGui::GetTextLineHeight();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (icon_size - text_height) * 0.5f);
+            ImGui::TextUnformatted(_name);
+        }
+    }
 
     Value InputPin::get_value() const {
         if (_output_pin) {
@@ -108,15 +117,29 @@ namespace imagegraph::graph {
         }
     }
 
-    bool InputPin::is_connected() const { return _output_pin; }
-
     OutputPin* InputPin::output_pin() const { return _output_pin; }
 
     ax::NodeEditor::LinkId InputPin::link_id() const { return _link_id; }
 } // namespace imagegraph::graph
 
 namespace imagegraph::graph {
-    OutputPin::OutputPin(const PinType type, Node* owner) : Pin(ax::NodeEditor::PinKind::Output, type, owner) {}
+    OutputPin::OutputPin(const PinType type, Node* owner, const char* name) :
+        Pin(ax::NodeEditor::PinKind::Output, type, owner, name) {}
+
+    void OutputPin::draw() const {
+        constexpr float icon_size = 24.0f;
+
+        if (_name) {
+            const float text_height = ImGui::GetTextLineHeight();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (icon_size - text_height) * 0.5f);
+            ImGui::TextUnformatted(_name);
+            ImGui::SameLine(0.0f, 0.0f);
+        }
+
+        ax::NodeEditor::BeginPin(_id, _kind);
+        draw_pin_icon(ImVec2(icon_size, icon_size), _type, !_connections.empty());
+        ax::NodeEditor::EndPin();
+    }
 
     void OutputPin::set_value(const Value value) {
         _value = value;
@@ -138,8 +161,6 @@ namespace imagegraph::graph {
             input_pin->disconnect();
         }
     }
-
-    bool OutputPin::is_connected() const { return !_connections.empty(); }
 
     std::unordered_set<InputPin*> OutputPin::connections() const { return _connections; }
 } // namespace imagegraph::graph
