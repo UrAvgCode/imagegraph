@@ -33,12 +33,12 @@ namespace imagegraph::nodes {
 
             ImGui::PushItemWidth(input_width);
             ImGui::TextUnformatted("Brightness");
-            ImGui::SameLine(80.0f);
+            ImGui::SameLine(label_width);
             if (ImGui::DragFloat("##brightness", &_brightness, 0.01, 0.0f, 0.0f, "%.2f")) {
                 modified();
             }
             ImGui::TextUnformatted("Contrast");
-            ImGui::SameLine(80.0f);
+            ImGui::SameLine(label_width);
             if (ImGui::DragFloat("##contrast", &_contrast, 0.01, 0.0f, 0.0f, "%.2f")) {
                 modified();
             }

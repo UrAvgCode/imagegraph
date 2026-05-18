@@ -6,6 +6,7 @@
 #include <widgets/image_preview.h>
 #include <widgets/indeterminate_progress_bar.h>
 
+#include <algorithm>
 #include <cstdio>
 #include <utility>
 
@@ -13,14 +14,13 @@ namespace {
     const auto memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
 
     imagegraph::image::Image run_depth_estimation(imagegraph::image::Image input_image, Ort::Session* session,
-                                                  const std::string& input_name, const std::string& output_name) {
-        constexpr std::size_t tensor_width = 518;
-        constexpr std::size_t tensor_height = 518;
+                                                  const std::array<int, 2> tensor_size, const std::string& input_name,
+                                                  const std::string& output_name) {
 
-        input_image.resize(tensor_width, tensor_height);
+        input_image.resize(tensor_size[0], tensor_size[1]);
         auto input_tensor_values = imagegraph::image::image_to_tensor(input_image);
 
-        constexpr auto input_shape = std::array<int64_t, 4>{1, 3, tensor_height, tensor_width};
+        const auto input_shape = std::array<int64_t, 4>{1, 3, tensor_size[1], tensor_size[0]};
         const auto input_tensor =
                 Ort::Value::CreateTensor<float>(memory_info, input_tensor_values.data(), input_tensor_values.size(),
                                                 input_shape.data(), input_shape.size());
@@ -31,10 +31,10 @@ namespace {
         const auto output_tensors = session->Run(Ort::RunOptions(), input_names, &input_tensor, 1, output_names, 1);
         const auto output_data = output_tensors.front().GetTensorData<float>();
 
-        auto normalized = imagegraph::image::Image(tensor_width, tensor_height, 1, output_data);
+        auto normalized = imagegraph::image::Image(tensor_size[0], tensor_size[1], 1, output_data);
         imagegraph::image::normalize(normalized);
 
-        auto output_image = imagegraph::image::Image(tensor_width, tensor_height, 4);
+        auto output_image = imagegraph::image::Image(tensor_size[0], tensor_size[1], 4);
         for (std::size_t i = 0; i < normalized.size(); ++i) {
             output_image[i * 4 + 0] = normalized[i];
             output_image[i * 4 + 1] = normalized[i];
@@ -47,7 +47,9 @@ namespace {
 } // namespace
 
 namespace imagegraph::nodes {
-    DepthNode::DepthNode() : _env(ORT_LOGGING_LEVEL_ERROR, "depth_anything"), _session(nullptr), _processing(false) {
+    DepthNode::DepthNode() :
+        _output_size({518, 518}), _env(ORT_LOGGING_LEVEL_ERROR, "depth_anything"), _session(nullptr),
+        _processing(false) {
         _input_pins.emplace_back(graph::PinType::Texture, this);
         _output_pins.emplace_back(graph::PinType::Texture, this);
 
@@ -81,6 +83,22 @@ namespace imagegraph::nodes {
 
             ImGui::BeginGroup();
             {
+                constexpr float total_width = 200.0f;
+                constexpr float label_width = 35.0f;
+                constexpr float input_width = total_width - label_width;
+
+                ImGui::PushItemWidth(input_width);
+                ImGui::TextUnformatted("Size");
+                ImGui::SameLine(label_width);
+                if (ImGui::InputInt2("##output_size", _output_size.data())) {
+                    _output_size[0] = std::clamp((_output_size[0] / 14) * 14, 14, 2072);
+                    _output_size[1] = std::clamp((_output_size[1] / 14) * 14, 14, 2072);
+                }
+                if (ImGui::IsItemDeactivatedAfterEdit()) {
+                    modified();
+                }
+                ImGui::PopItemWidth();
+
                 widgets::indeterminate_progress_bar(_processing);
 
                 const auto texture_size =
@@ -126,13 +144,23 @@ namespace imagegraph::nodes {
         }
 
         auto input_data = compute::download_texture(input_texture);
-        _future = std::async(std::launch::async, run_depth_estimation, std::move(input_data), &_session, _input_name,
-                             _output_name);
+        _future = std::async(std::launch::async, run_depth_estimation, std::move(input_data), &_session, _output_size,
+                             _input_name, _output_name);
 
         _processing = true;
     }
 
-    nlohmann::json DepthNode::serialize() const { return {}; }
+    nlohmann::json DepthNode::serialize() const {
+        return {{"output_width", _output_size[0]}, {"output_height", _output_size[1]}};
+    }
 
-    void DepthNode::deserialize(const nlohmann::json&) {}
+    void DepthNode::deserialize(const nlohmann::json& json) {
+        if (json.contains("output_width") && json["output_width"].is_number()) {
+            _output_size[0] = json["output_width"].get<int>();
+        }
+        if (json.contains("output_height") && json["output_height"].is_number()) {
+            _output_size[1] = json["output_height"].get<int>();
+        }
+        modified();
+    }
 } // namespace imagegraph::nodes

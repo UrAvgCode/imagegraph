@@ -33,12 +33,12 @@ namespace imagegraph::nodes {
 
             ImGui::PushItemWidth(input_width);
             ImGui::TextUnformatted("Saturation");
-            ImGui::SameLine(80.0f);
+            ImGui::SameLine(label_width);
             if (ImGui::DragFloat("##saturation", &_saturation, 0.01, 0.0f, 0.0f, "%.2f")) {
                 modified();
             }
             ImGui::TextUnformatted("Vibrance");
-            ImGui::SameLine(80.0f);
+            ImGui::SameLine(label_width);
             if (ImGui::DragFloat("##vibrance", &_vibrance, 0.01, 0.0f, 0.0f, "%.2f")) {
                 modified();
             }

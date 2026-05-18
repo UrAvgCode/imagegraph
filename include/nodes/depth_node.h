@@ -7,6 +7,7 @@
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include <future>
+#include <array>
 
 namespace imagegraph::nodes {
     class DepthNode final : public graph::Node {
@@ -20,6 +21,8 @@ namespace imagegraph::nodes {
         void deserialize(const nlohmann::json&) override;
 
     private:
+        std::array<int, 2> _output_size;
+
         compute::Texture _texture;
 
         Ort::Env _env;

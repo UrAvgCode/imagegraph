@@ -22,7 +22,7 @@ endfunction()
 
 download_model(
         "${model_dir}/depth_anything.onnx"
-        "https://github.com/fabio-sim/Depth-Anything-ONNX/releases/download/v2.0.0/depth_anything_v2_vitb.onnx"
+        "https://github.com/fabio-sim/Depth-Anything-ONNX/releases/download/v2.0.0/depth_anything_v2_vitb_dynamic.onnx"
 )
 
 download_model(

@@ -423,4 +423,4 @@ namespace imagegraph::compute {
         }
         return location;
     }
-} // namespace imagegraph::process
+} // namespace imagegraph::compute
