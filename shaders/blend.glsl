@@ -17,17 +17,12 @@ void main() {
         return;
     }
 
-    vec4 original = imageLoad(u_base, texel);
-    vec4 filtered = imageLoad(u_blend, texel);
+    vec4 base = imageLoad(u_base, texel);
+    vec4 blend = imageLoad(u_blend, texel);
 
     vec2 uv = (vec2(texel) + 0.5) / vec2(size);
-    vec4 mask = u_use_mask ? texture(u_mask, uv) : vec4(0.5);
+    float mask = u_use_mask ? texture(u_mask, uv).r : 0.5;
 
-    vec4 output_color;
-    output_color.r = mix(original.r, filtered.r, mask.r);
-    output_color.g = mix(original.g, filtered.g, mask.g);
-    output_color.b = mix(original.b, filtered.b, mask.b);
-    output_color.a = mix(original.a, filtered.a, mask.a);
-
-    imageStore(u_output, texel, output_color);
+    vec4 color = mix(base, blend, mask);
+    imageStore(u_output, texel, color);
 }

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <compute/texture.h>
+#include <compute/mask.h>
 #include <graph/node.h>
 #include <image/image.h>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
-#include <future>
 #include <array>
+#include <future>
 
 namespace imagegraph::nodes {
     class DepthNode final : public graph::Node {
@@ -23,7 +23,7 @@ namespace imagegraph::nodes {
     private:
         std::array<int, 2> _output_size;
 
-        compute::Texture _texture;
+        compute::Mask _mask;
 
         Ort::Env _env;
         Ort::Session _session;

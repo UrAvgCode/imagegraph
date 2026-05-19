@@ -3,19 +3,22 @@
 #include <glad/glad.h>
 
 namespace imagegraph::compute {
-    class Texture {
+    class Mask {
     public:
-        Texture();
-        ~Texture();
+        Mask();
+        ~Mask();
 
-        Texture(const Texture&) = delete;
-        Texture& operator=(const Texture&) = delete;
+        Mask(const Mask&) = delete;
+        Mask& operator=(const Mask&) = delete;
 
-        Texture(Texture&&) noexcept;
-        Texture& operator=(Texture&&) noexcept;
+        Mask(Mask&&) noexcept;
+        Mask& operator=(Mask&&) noexcept;
 
         void allocate(GLsizei width, GLsizei height);
         void allocate(GLsizei width, GLsizei height, const float*);
+
+        void bind(GLuint unit) const;
+        static void unbind(GLuint unit);
 
         void bind_image(GLuint unit, GLenum access) const;
         static void unbind_image(GLuint unit);

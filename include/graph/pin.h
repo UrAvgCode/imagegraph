@@ -1,23 +1,21 @@
 #pragma once
 
+#include <compute/mask.h>
 #include <compute/texture.h>
-#include <image/image.h>
 
 #include <imgui_node_editor.h>
 
-#include <unordered_set>
-#include <variant>
+#include <vector>
 
 namespace imagegraph::graph {
     class Node;
     class OutputPin;
 
-    enum class PinType { Texture, ImageData };
-    using Value = std::variant<compute::Texture*, image::Image*>;
-
     class Pin {
     public:
-        explicit Pin(ax::NodeEditor::PinKind, PinType, Node*, const char*);
+        enum class Type { Texture, Mask };
+
+        explicit Pin(ax::NodeEditor::PinKind, Type, Node*, const char*);
         virtual ~Pin() = default;
 
         Pin(const Pin&) = delete;
@@ -30,24 +28,30 @@ namespace imagegraph::graph {
 
         ax::NodeEditor::PinId id() const;
         ax::NodeEditor::PinKind kind() const;
-        PinType type() const;
+        Type type() const;
         Node* owner() const;
 
     protected:
+        union Value {
+            compute::Texture* texture;
+            compute::Mask* mask;
+        };
+
         ax::NodeEditor::PinId _id;
         ax::NodeEditor::PinKind _kind;
-        PinType _type;
+        Type _type;
         Node* _owner;
         const char* _name;
     };
 
     class InputPin final : public Pin {
     public:
-        explicit InputPin(PinType, Node*, const char* = nullptr);
+        explicit InputPin(Type, Node*, const char* = nullptr);
 
         void draw() const override;
 
-        Value get_value() const;
+        compute::Texture* texture() const;
+        compute::Mask* mask() const;
 
         void connect(OutputPin*);
         void disconnect();
@@ -62,20 +66,26 @@ namespace imagegraph::graph {
 
     class OutputPin final : public Pin {
     public:
-        explicit OutputPin(PinType, Node*, const char* = nullptr);
+        explicit OutputPin(Type, Node*, const char* = nullptr);
 
         void draw() const override;
 
-        void set_value(Value);
-        Value get_value() const;
+        compute::Texture* texture() const;
+        compute::Mask* mask() const;
 
-        void connect(InputPin*);
-        void disconnect(InputPin*);
+        void set_texture(compute::Texture*);
+        void set_mask(compute::Mask*);
 
-        std::unordered_set<InputPin*> connections() const;
+        const std::vector<InputPin*>& connections() const;
 
     private:
-        std::unordered_set<InputPin*> _connections;
+        friend void InputPin::connect(OutputPin*);
+        friend void InputPin::disconnect();
+
+        void add_connection(InputPin*);
+        void remove_connection(InputPin*);
+
+        std::vector<InputPin*> _connections;
         Value _value;
     };
 } // namespace imagegraph::graph

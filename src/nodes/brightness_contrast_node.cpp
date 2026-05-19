@@ -5,8 +5,8 @@
 
 namespace imagegraph::nodes {
     BrightnessContrastNode::BrightnessContrastNode() : _brightness(0.0f), _contrast(1.0f) {
-        _input_pins.emplace_back(graph::PinType::Texture, this);
-        _output_pins.emplace_back(graph::PinType::Texture, this);
+        _input_pins.emplace_back(graph::Pin::Type::Texture, this);
+        _output_pins.emplace_back(graph::Pin::Type::Texture, this);
 
         _compute_program.load(shader::brightness_contrast);
     }
@@ -68,10 +68,10 @@ namespace imagegraph::nodes {
         }
         _modified = false;
 
-        const auto input_texture = std::get<compute::Texture*>(_input_pins[0].get_value());
+        const auto input_texture = _input_pins[0].texture();
         if (!input_texture || input_texture->id() == 0) {
             _texture = compute::Texture();
-            _output_pins[0].set_value({});
+            _output_pins[0].set_texture(nullptr);
             return;
         }
 
@@ -96,7 +96,7 @@ namespace imagegraph::nodes {
         compute::Texture::unbind_image(0);
         compute::Texture::unbind_image(1);
 
-        _output_pins[0].set_value(&_texture);
+        _output_pins[0].set_texture(&_texture);
     }
 
     nlohmann::json BrightnessContrastNode::serialize() const {

@@ -3,7 +3,7 @@
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include <compute/compute_program.h>
-#include <compute/texture.h>
+#include <compute/mask.h>
 #include <graph/node.h>
 
 #include <array>
@@ -41,8 +41,8 @@ namespace imagegraph::nodes {
         bool _uv_modified;
         bool _threshold_modified;
 
-        compute::Texture _texture;
-        compute::Texture _logits_texture;
+        compute::Mask _mask;
+        compute::Mask _logits_mask;
         compute::ComputeProgram _compute_program;
 
         Ort::Env _env;

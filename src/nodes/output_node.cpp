@@ -12,7 +12,7 @@ namespace imagegraph::nodes {
     static std::uint32_t output_counter = 0;
 
     OutputNode::OutputNode() : _zoom(1.0f), _pan(0, 0), _fit_request(true) {
-        _input_pins.emplace_back(graph::PinType::Texture, this);
+        _input_pins.emplace_back(graph::Pin::Type::Texture, this);
         _name = std::format("Output {}", ++output_counter);
     }
 
@@ -78,9 +78,7 @@ namespace imagegraph::nodes {
 
     const std::string& OutputNode::name() const { return _name; }
 
-    const compute::Texture* OutputNode::texture() const {
-        return std::get<compute::Texture*>(_input_pins[0].get_value());
-    }
+    const compute::Texture* OutputNode::texture() const { return _input_pins[0].texture(); }
 
     void OutputNode::fit_to_canvas(const ImVec2 canvas_size) {
         const auto output_texture = texture();

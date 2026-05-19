@@ -1,14 +1,15 @@
 #include <nodes/blend_node.h>
 
+#include <compute/mask.h>
 #include <shader/blend.h>
 #include <widgets/image_preview.h>
 
 namespace imagegraph::nodes {
     BlendNode::BlendNode() {
-        _input_pins.emplace_back(graph::PinType::Texture, this, "base");
-        _input_pins.emplace_back(graph::PinType::Texture, this, "blend");
-        _input_pins.emplace_back(graph::PinType::Texture, this, "mask");
-        _output_pins.emplace_back(graph::PinType::Texture, this);
+        _input_pins.emplace_back(graph::Pin::Type::Texture, this, "base");
+        _input_pins.emplace_back(graph::Pin::Type::Texture, this, "blend");
+        _input_pins.emplace_back(graph::Pin::Type::Mask, this, "mask");
+        _output_pins.emplace_back(graph::Pin::Type::Texture, this);
 
         _compute_program.load(shader::blend);
     }
@@ -50,11 +51,11 @@ namespace imagegraph::nodes {
         }
         _modified = false;
 
-        const auto base_texture = std::get<compute::Texture*>(_input_pins[0].get_value());
-        const auto blend_texture = std::get<compute::Texture*>(_input_pins[1].get_value());
+        const auto base_texture = _input_pins[0].texture();
+        const auto blend_texture = _input_pins[1].texture();
         if (!base_texture || base_texture->id() == 0 || !blend_texture || blend_texture->id() == 0) {
             _texture = compute::Texture();
-            _output_pins[0].set_value({});
+            _output_pins[0].set_texture(nullptr);
             return;
         }
 
@@ -68,12 +69,12 @@ namespace imagegraph::nodes {
 
         _compute_program.bind();
 
-        const auto mask_texture = std::get<compute::Texture*>(_input_pins[2].get_value());
-        if (mask_texture && mask_texture->id() != 0) {
-            mask_texture->bind(2);
+        const auto mask = _input_pins[2].mask();
+        if (mask && mask->id() != 0) {
+            mask->bind(2);
             _compute_program.set_uniform_int("u_use_mask", 1);
         } else {
-            compute::Texture::unbind(2);
+            compute::Mask::unbind(2);
             _compute_program.set_uniform_int("u_use_mask", 0);
         }
 
@@ -86,10 +87,10 @@ namespace imagegraph::nodes {
         compute::ComputeProgram::unbind();
         compute::Texture::unbind_image(0);
         compute::Texture::unbind_image(1);
-        compute::Texture::unbind(2);
         compute::Texture::unbind_image(3);
+        compute::Mask::unbind(2);
 
-        _output_pins[0].set_value(&_texture);
+        _output_pins[0].set_texture(&_texture);
     }
 
     nlohmann::json BlendNode::serialize() const { return {}; }

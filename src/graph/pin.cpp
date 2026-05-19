@@ -6,13 +6,16 @@
 
 #include <imgui_internal.h>
 
+#include <algorithm>
+#include <cassert>
+
 namespace {
-    ImColor get_pin_color(const imagegraph::graph::PinType type) {
+    ImColor get_pin_color(const imagegraph::graph::Pin::Type type) {
         switch (type) {
             default:
-            case imagegraph::graph::PinType::Texture:
+            case imagegraph::graph::Pin::Type::Texture:
                 return {220, 48, 48};
-            case imagegraph::graph::PinType::ImageData:
+            case imagegraph::graph::Pin::Type::Mask:
                 return {68, 201, 156};
         }
     }
@@ -35,14 +38,14 @@ namespace {
     }
 
     void draw_pin_icon(ImDrawList* drawList, const ImVec2& min, const ImVec2& max,
-                       const imagegraph::graph::PinType type, const bool connected) {
+                       const imagegraph::graph::Pin::Type type, const bool connected) {
         auto color = get_pin_color(type);
         color.Value.w = ImGui::GetStyle().Alpha;
 
         draw_icon(drawList, min, max, connected, color, ImColor(32, 32, 32));
     }
 
-    void draw_pin_icon(const ImVec2 size, const imagegraph::graph::PinType type, const bool connected) {
+    void draw_pin_icon(const ImVec2 size, const imagegraph::graph::Pin::Type type, const bool connected) {
         if (ImGui::IsRectVisible(size)) {
             const auto cursor_pos = ImGui::GetCursorScreenPos();
             const auto draw_list = ImGui::GetWindowDrawList();
@@ -53,20 +56,20 @@ namespace {
 } // namespace
 
 namespace imagegraph::graph {
-    Pin::Pin(const ax::NodeEditor::PinKind kind, const PinType type, Node* owner, const char* name) :
+    Pin::Pin(const ax::NodeEditor::PinKind kind, const Type type, Node* owner, const char* name) :
         _id(generate_unique_pin_id()), _kind(kind), _type(type), _owner(owner), _name(name) {}
 
     ax::NodeEditor::PinId Pin::id() const { return _id; }
 
     ax::NodeEditor::PinKind Pin::kind() const { return _kind; }
 
-    PinType Pin::type() const { return _type; }
+    Pin::Type Pin::type() const { return _type; }
 
     Node* Pin::owner() const { return _owner; }
 } // namespace imagegraph::graph
 
 namespace imagegraph::graph {
-    InputPin::InputPin(const PinType type, Node* owner, const char* name) :
+    InputPin::InputPin(const Type type, Node* owner, const char* name) :
         Pin(ax::NodeEditor::PinKind::Input, type, owner, name), _output_pin(nullptr) {}
 
     void InputPin::draw() const {
@@ -84,24 +87,35 @@ namespace imagegraph::graph {
         }
     }
 
-    Value InputPin::get_value() const {
+    compute::Texture* InputPin::texture() const {
+        assert(_type == Type::Texture);
         if (_output_pin) {
-            return _output_pin->get_value();
+            return _output_pin->texture();
         }
-        return {};
+        return nullptr;
+    }
+
+    compute::Mask* InputPin::mask() const {
+        assert(_type == Type::Mask);
+        if (_output_pin) {
+            return _output_pin->mask();
+        }
+        return nullptr;
     }
 
     void InputPin::connect(OutputPin* output_pin) {
+        assert(output_pin->type() == _type);
+
         if (_output_pin == output_pin) {
             return;
         }
 
         if (_output_pin) {
-            _output_pin->disconnect(this);
+            _output_pin->remove_connection(this);
         }
 
         _output_pin = output_pin;
-        _output_pin->connect(this);
+        _output_pin->add_connection(this);
         _link_id = generate_unique_link_id();
 
         _owner->modified();
@@ -109,7 +123,7 @@ namespace imagegraph::graph {
 
     void InputPin::disconnect() {
         if (_output_pin) {
-            _output_pin->disconnect(this);
+            _output_pin->remove_connection(this);
             _output_pin = nullptr;
             _link_id = 0;
 
@@ -123,8 +137,10 @@ namespace imagegraph::graph {
 } // namespace imagegraph::graph
 
 namespace imagegraph::graph {
-    OutputPin::OutputPin(const PinType type, Node* owner, const char* name) :
-        Pin(ax::NodeEditor::PinKind::Output, type, owner, name) {}
+    OutputPin::OutputPin(const Type type, Node* owner, const char* name) :
+        Pin(ax::NodeEditor::PinKind::Output, type, owner, name), _value{} {
+        _connections.reserve(8);
+    }
 
     void OutputPin::draw() const {
         constexpr float icon_size = 24.0f;
@@ -141,26 +157,47 @@ namespace imagegraph::graph {
         ax::NodeEditor::EndPin();
     }
 
-    void OutputPin::set_value(const Value value) {
-        _value = value;
-        for (auto& input_pin: _connections) {
+    compute::Texture* OutputPin::texture() const {
+        assert(_type == Type::Texture);
+        return _value.texture;
+    }
+
+    compute::Mask* OutputPin::mask() const {
+        assert(_type == Type::Mask);
+        return _value.mask;
+    }
+
+    void OutputPin::set_texture(compute::Texture* texture) {
+        assert(_type == Type::Texture);
+        _value.texture = texture;
+        for (const auto input_pin: _connections) {
             input_pin->owner()->modified();
         }
     }
 
-    Value OutputPin::get_value() const { return _value; }
-
-    void OutputPin::connect(InputPin* input_pin) {
-        if (_connections.insert(input_pin).second) {
-            input_pin->connect(this);
+    void OutputPin::set_mask(compute::Mask* mask) {
+        assert(_type == Type::Mask);
+        _value.mask = mask;
+        for (const auto input_pin: _connections) {
+            input_pin->owner()->modified();
         }
     }
 
-    void OutputPin::disconnect(InputPin* input_pin) {
-        if (_connections.erase(input_pin)) {
-            input_pin->disconnect();
+    void OutputPin::add_connection(InputPin* input_pin) {
+        assert(input_pin->type() == _type);
+        if (std::ranges::find(_connections, input_pin) == _connections.end()) {
+            _connections.push_back(input_pin);
         }
     }
 
-    std::unordered_set<InputPin*> OutputPin::connections() const { return _connections; }
+    void OutputPin::remove_connection(InputPin* input_pin) {
+        assert(input_pin->type() == _type);
+        const auto it = std::ranges::find(_connections, input_pin);
+        if (it != _connections.end()) {
+            *it = _connections.back();
+            _connections.pop_back();
+        }
+    }
+
+    const std::vector<InputPin*>& OutputPin::connections() const { return _connections; }
 } // namespace imagegraph::graph

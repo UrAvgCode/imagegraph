@@ -10,7 +10,7 @@
 #include <utility>
 
 namespace imagegraph::nodes {
-    InputNode::InputNode() { _output_pins.emplace_back(graph::PinType::Texture, this); }
+    InputNode::InputNode() { _output_pins.emplace_back(graph::Pin::Type::Texture, this); }
 
     void InputNode::draw() {
         ax::NodeEditor::BeginNode(_id);
@@ -64,7 +64,7 @@ namespace imagegraph::nodes {
 
             if (result.width() && result.height()) {
                 compute::upload_image(result, &_texture);
-                _output_pins[0].set_value(&_texture);
+                _output_pins[0].set_texture(&_texture);
             }
         }
 

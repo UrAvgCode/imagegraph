@@ -3,7 +3,7 @@
 layout (local_size_x = 16, local_size_y = 16) in;
 
 layout (binding = 0) uniform sampler2D u_input;
-layout (binding = 1, rgba32f) uniform writeonly image2D u_output;
+layout (binding = 1, r32f) uniform writeonly image2D u_output;
 
 uniform float u_threshold;
 
@@ -16,9 +16,7 @@ void main() {
     }
 
     vec2 uv = (vec2(texel) + 0.5) / vec2(size);
-    vec4 color = texture(u_input, uv);
-    color.r = step(u_threshold, color.r);
-    color.g = step(u_threshold, color.g);
-    color.b = step(u_threshold, color.b);
+    float value = step(u_threshold, texture(u_input, uv).r);
+    vec4 color = vec4(value, value, value, 1.0);
     imageStore(u_output, texel, color);
 }
