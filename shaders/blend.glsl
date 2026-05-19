@@ -21,7 +21,7 @@ void main() {
     vec4 filtered = imageLoad(u_blend, texel);
 
     vec2 uv = (vec2(texel) + 0.5) / vec2(size);
-    vec4 mask = u_use_mask ? texture(u_mask, uv, 0.0) : vec4(0.5);
+    vec4 mask = u_use_mask ? texture(u_mask, uv) : vec4(0.5);
 
     vec4 output_color;
     output_color.r = mix(original.r, filtered.r, mask.r);

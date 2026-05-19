@@ -2,6 +2,7 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
+#include <compute/compute_program.h>
 #include <compute/texture.h>
 #include <graph/node.h>
 
@@ -35,9 +36,14 @@ namespace imagegraph::nodes {
 
     private:
         std::array<float, 2> _uv;
-        bool _point_modified;
+        float _threshold;
+
+        bool _uv_modified;
+        bool _threshold_modified;
 
         compute::Texture _texture;
+        compute::Texture _logits_texture;
+        compute::ComputeProgram _compute_program;
 
         Ort::Env _env;
         Ort::Session _encoder_session;

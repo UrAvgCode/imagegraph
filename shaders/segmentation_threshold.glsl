@@ -1,0 +1,24 @@
+#version 460
+
+layout (local_size_x = 16, local_size_y = 16) in;
+
+layout (binding = 0) uniform sampler2D u_input;
+layout (binding = 1, rgba32f) uniform writeonly image2D u_output;
+
+uniform float u_threshold;
+
+void main() {
+    ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(u_output);
+
+    if (texel.x >= size.x || texel.y >= size.y) {
+        return;
+    }
+
+    vec2 uv = (vec2(texel) + 0.5) / vec2(size);
+    vec4 color = texture(u_input, uv);
+    color.r = step(u_threshold, color.r);
+    color.g = step(u_threshold, color.g);
+    color.b = step(u_threshold, color.b);
+    imageStore(u_output, texel, color);
+}
