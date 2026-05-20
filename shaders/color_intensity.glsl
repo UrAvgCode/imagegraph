@@ -5,8 +5,8 @@ layout (local_size_x = 16, local_size_y = 16) in;
 layout (binding = 0, rgba32f) uniform readonly image2D u_input;
 layout (binding = 1, rgba32f) uniform writeonly image2D u_output;
 
-uniform float u_saturation;
-uniform float u_vibrance;
+layout(location = 0) uniform float u_saturation;
+layout(location = 1) uniform float u_vibrance;
 
 float luminance(vec3 rgb) {
     return dot(rgb, vec3(0.2126, 0.7152, 0.0722));

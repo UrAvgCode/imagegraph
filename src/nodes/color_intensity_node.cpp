@@ -83,18 +83,13 @@ namespace imagegraph::nodes {
 
         _texture.allocate(width, height);
 
-        _compute_program.bind();
-        _compute_program.set_uniform_float("u_saturation", _saturation);
-        _compute_program.set_uniform_float("u_vibrance", _vibrance);
+        _compute_program.set_uniform_float(0, _saturation);
+        _compute_program.set_uniform_float(1, _vibrance);
 
         input_texture->bind_image(0, GL_READ_ONLY);
         _texture.bind_image(1, GL_WRITE_ONLY);
 
         _compute_program.dispatch(width, height);
-
-        compute::ComputeProgram::unbind();
-        compute::Texture::unbind_image(0);
-        compute::Texture::unbind_image(1);
 
         _output_pins[0].set_texture(&_texture);
     }

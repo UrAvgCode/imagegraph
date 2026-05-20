@@ -14,21 +14,20 @@ namespace imagegraph::compute {
         Mask(Mask&&) noexcept;
         Mask& operator=(Mask&&) noexcept;
 
+        explicit operator bool() const noexcept;
+
         void allocate(GLsizei width, GLsizei height);
         void allocate(GLsizei width, GLsizei height, const float*);
 
         void bind(GLuint unit) const;
-        static void unbind(GLuint unit);
-
         void bind_image(GLuint unit, GLenum access) const;
-        static void unbind_image(GLuint unit);
 
         GLuint id() const;
         GLsizei width() const;
         GLsizei height() const;
 
     private:
-        GLuint _texture;
+        GLuint _id;
         GLsizei _width;
         GLsizei _height;
     };

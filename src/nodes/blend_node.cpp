@@ -67,15 +67,11 @@ namespace imagegraph::nodes {
 
         _texture.allocate(width, height);
 
-        _compute_program.bind();
-
-        const auto mask = _input_pins[2].mask();
-        if (mask && mask->id() != 0) {
+        if (const auto mask = _input_pins[2].mask()) {
             mask->bind(2);
-            _compute_program.set_uniform_int("u_use_mask", 1);
+            _compute_program.set_uniform_int(0, true);
         } else {
-            compute::Mask::unbind(2);
-            _compute_program.set_uniform_int("u_use_mask", 0);
+            _compute_program.set_uniform_int(0, false);
         }
 
         base_texture->bind_image(0, GL_READ_ONLY);
@@ -83,12 +79,6 @@ namespace imagegraph::nodes {
         _texture.bind_image(3, GL_WRITE_ONLY);
 
         _compute_program.dispatch(width, height);
-
-        compute::ComputeProgram::unbind();
-        compute::Texture::unbind_image(0);
-        compute::Texture::unbind_image(1);
-        compute::Texture::unbind_image(3);
-        compute::Mask::unbind(2);
 
         _output_pins[0].set_texture(&_texture);
     }

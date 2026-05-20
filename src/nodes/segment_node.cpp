@@ -246,17 +246,12 @@ namespace imagegraph::nodes {
 
             _mask.allocate(input_texture->width(), input_texture->height());
 
-            _compute_program.bind();
-            _compute_program.set_uniform_float("u_threshold", _threshold);
+            _compute_program.set_uniform_float(0, _threshold);
 
             _logits_mask.bind(0);
             _mask.bind_image(1, GL_WRITE_ONLY);
 
             _compute_program.dispatch(_mask.width(), _mask.height());
-
-            compute::ComputeProgram::unbind();
-            compute::Mask::unbind(0);
-            compute::Mask::unbind_image(1);
 
             _output_pins[0].set_mask(&_mask);
         }
