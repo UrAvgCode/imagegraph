@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include <GLFW/glfw3.h>
 
@@ -65,7 +65,7 @@ static GLFWwindow* create_window() {
 }
 
 static void initialize_glad() {
-    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+    if (!gladLoadGL(glfwGetProcAddress)) {
         std::fprintf(stderr, "failed to initialize glad\n");
         std::exit(1);
     }
