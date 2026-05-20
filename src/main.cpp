@@ -119,15 +119,7 @@ static void setup_dockspace() {
     }
 }
 
-int main() {
-    initialize_glfw();
-    initialize_nfd();
-
-    const auto window = create_window();
-
-    initialize_glad();
-    initialize_imgui(window);
-
+static void run(GLFWwindow* window) {
     auto graph = imagegraph::graph::Graph();
     auto node_editor = imagegraph::NodeEditor(&graph);
     const auto output_view = imagegraph::OutputView(&graph);
@@ -170,6 +162,18 @@ int main() {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
+}
+
+int main() {
+    initialize_glfw();
+    initialize_nfd();
+
+    const auto window = create_window();
+
+    initialize_glad();
+    initialize_imgui(window);
+
+    run(window);
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
