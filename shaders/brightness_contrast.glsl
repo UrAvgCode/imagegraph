@@ -5,8 +5,8 @@ layout (local_size_x = 16, local_size_y = 16) in;
 layout (binding = 0, rgba32f) uniform readonly image2D u_input;
 layout (binding = 1, rgba32f) uniform writeonly image2D u_output;
 
-layout(location = 0) uniform float u_brightness;
-layout(location = 1) uniform float u_contrast;
+layout (location = 0) uniform float u_brightness;
+layout (location = 1) uniform float u_contrast;
 
 void main() {
     ivec2 texel = ivec2(gl_GlobalInvocationID.xy);

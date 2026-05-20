@@ -4,6 +4,7 @@
 #include <nodes/brightness_contrast_node.h>
 #include <nodes/color_intensity_node.h>
 #include <nodes/depth_node.h>
+#include <nodes/gaussian_blur_node.h>
 #include <nodes/input_node.h>
 #include <nodes/output_node.h>
 #include <nodes/segment_node.h>
@@ -70,6 +71,8 @@ namespace imagegraph {
                 node_type_name = "brightness_contrast";
             } else if (dynamic_cast<nodes::ColorIntensityNode*>(node)) {
                 node_type_name = "color_intensity";
+            } else if (dynamic_cast<nodes::GaussianBlurNode*>(node)) {
+                node_type_name = "gaussian_blur";
             } else if (dynamic_cast<nodes::BlendNode*>(node)) {
                 node_type_name = "blend";
             } else if (dynamic_cast<nodes::DepthNode*>(node)) {
@@ -140,6 +143,8 @@ namespace imagegraph {
                 node = std::make_unique<nodes::BrightnessContrastNode>();
             } else if (type_str == "color_intensity") {
                 node = std::make_unique<nodes::ColorIntensityNode>();
+            } else if (type_str == "gaussian_blur") {
+                node = std::make_unique<nodes::GaussianBlurNode>();
             } else if (type_str == "blend") {
                 node = std::make_unique<nodes::BlendNode>();
             } else if (type_str == "depth") {
@@ -258,6 +263,9 @@ namespace imagegraph {
                 new_node = _graph->add_node(std::make_unique<nodes::ColorIntensityNode>());
             }
             ImGui::Separator();
+            if (ImGui::MenuItem("Gaussian Blur")) {
+                new_node = _graph->add_node(std::make_unique<nodes::GaussianBlurNode>());
+            }
             if (ImGui::MenuItem("Blend")) {
                 new_node = _graph->add_node(std::make_unique<nodes::BlendNode>());
             }
