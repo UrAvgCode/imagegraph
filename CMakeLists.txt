@@ -29,3 +29,5 @@ target_link_libraries(imagegraph PRIVATE
         shader_headers
         onnxruntime
 )
+
+include(cmake/install.cmake)
