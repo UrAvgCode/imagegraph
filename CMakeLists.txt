@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.24)
 project(imagegraph)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -7,10 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(ENABLE_WARNINGS ON)
 option(BUILD_SHARED_LIBS OFF)
 
-find_package(onnxruntime REQUIRED)
-
 include(cmake/models.cmake)
 include(cmake/shaders.cmake)
+include(cmake/onnxruntime.cmake)
 
 add_subdirectory(external)
 

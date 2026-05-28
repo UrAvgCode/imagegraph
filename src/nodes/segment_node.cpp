@@ -76,7 +76,7 @@ namespace {
         const auto mask_width = static_cast<int>(mask_dimensions[3]);
         const auto mask_height = static_cast<int>(mask_dimensions[2]);
 
-        return imagegraph::image::Image(mask_width, mask_height, 1, mask_ptr);
+        return {mask_width, mask_height, 1, mask_ptr};
     }
 } // namespace
 

@@ -4,7 +4,7 @@
 #include <graph/node.h>
 #include <image/image.h>
 
-#include <onnxruntime/onnxruntime_cxx_api.h>
+#include <onnxruntime_cxx_api.h>
 
 #include <array>
 #include <future>
