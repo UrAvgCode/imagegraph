@@ -10,10 +10,10 @@ namespace imagegraph {
         explicit NodeEditor(graph::Graph*);
         ~NodeEditor();
 
-        void draw() const;
+        void draw();
 
         nlohmann::json serialize() const;
-        void deserialize(const nlohmann::json&) const;
+        void deserialize(const nlohmann::json&);
 
     private:
         void handle_creation_action() const;
@@ -22,5 +22,7 @@ namespace imagegraph {
 
         ax::NodeEditor::EditorContext* _context;
         graph::Graph* _graph;
+
+        bool _navigate_to_content;
     };
 } // namespace imagegraph

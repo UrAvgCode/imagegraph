@@ -16,7 +16,7 @@
 #include <utility>
 
 namespace imagegraph {
-    NodeEditor::NodeEditor(graph::Graph* graph) : _graph(graph) {
+    NodeEditor::NodeEditor(graph::Graph* graph) : _graph(graph), _navigate_to_content(false) {
         auto config = ax::NodeEditor::Config();
         config.SettingsFile = "node_editor.json";
         _context = ax::NodeEditor::CreateEditor(&config);
@@ -24,7 +24,7 @@ namespace imagegraph {
 
     NodeEditor::~NodeEditor() { ax::NodeEditor::DestroyEditor(_context); }
 
-    void NodeEditor::draw() const {
+    void NodeEditor::draw() {
         ax::NodeEditor::SetCurrentEditor(_context);
         ax::NodeEditor::Begin("Node Editor");
 
@@ -46,6 +46,11 @@ namespace imagegraph {
         handle_creation_action();
         handle_node_creation_popup();
         handle_deletion_action();
+
+        if (_navigate_to_content) {
+            _navigate_to_content = false;
+            ax::NodeEditor::NavigateToContent();
+        }
 
         ax::NodeEditor::End();
         ax::NodeEditor::SetCurrentEditor(nullptr);
@@ -117,12 +122,13 @@ namespace imagegraph {
         return json;
     }
 
-    void NodeEditor::deserialize(const nlohmann::json& json) const {
+    void NodeEditor::deserialize(const nlohmann::json& json) {
         if (!json.contains("nodes") || !json["nodes"].is_array()) {
             return;
         }
 
         _graph->clear_nodes();
+        _navigate_to_content = true;
         auto id_map = std::unordered_map<int, graph::Node*>();
 
         ax::NodeEditor::SetCurrentEditor(_context);
