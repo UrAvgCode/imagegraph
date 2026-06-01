@@ -41,13 +41,13 @@ namespace {
     }
 
     template<std::size_t N>
-    std::filesystem::path save_dialog(const std::array<nfdfilteritem_t, N>& filters) {
+    std::filesystem::path save_dialog(const std::array<nfdfilteritem_t, N>& filters, const char* default_name) {
         auto parent_window = nfdwindowhandle_t();
         NFD_GetNativeWindowFromGLFWWindow(glfwGetCurrentContext(), &parent_window);
 
         auto path = NFD::UniquePath();
-        const auto result =
-                NFD::SaveDialog(path, filters.data(), filters.size(), default_path.c_str(), nullptr, parent_window);
+        const auto result = NFD::SaveDialog(path, filters.data(), filters.size(), default_path.c_str(), default_name,
+                                            parent_window);
 
         if (result == NFD_OKAY) {
             set_default_directory(path.get());
@@ -60,9 +60,9 @@ namespace {
 namespace imagegraph::platform {
     std::filesystem::path open_image_dialog() { return open_dialog(image_filters); }
 
-    std::filesystem::path save_image_dialog() { return save_dialog(image_filters); }
+    std::filesystem::path save_image_dialog() { return save_dialog(image_filters, "untitled.jpg"); }
 
     std::filesystem::path open_json_dialog() { return open_dialog(json_filters); }
 
-    std::filesystem::path save_json_dialog() { return save_dialog(json_filters); }
+    std::filesystem::path save_json_dialog() { return save_dialog(json_filters, "untitled.json"); }
 } // namespace imagegraph::platform
