@@ -35,24 +35,29 @@ namespace imagegraph::compute {
     Mask::operator bool() const noexcept { return _id != 0; }
 
     void Mask::allocate(const GLsizei width, const GLsizei height) {
-        if (_id == 0) {
-            glCreateTextures(GL_TEXTURE_2D, 1, &_id);
-
-            glTextureParameteri(_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTextureParameteri(_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            glTextureParameteri(_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTextureParameteri(_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-            constexpr GLint swizzle[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
-            glTextureParameteriv(_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
+        if (_width == width && _height == height) {
+            return;
         }
 
-        if (_width != width || _height != height) {
-            _width = width;
-            _height = height;
-            glTextureStorage2D(_id, 1, GL_R32F, _width, _height);
+        if (_id) {
+            glDeleteTextures(1, &_id);
         }
+
+        _width = width;
+        _height = height;
+
+        glCreateTextures(GL_TEXTURE_2D, 1, &_id);
+
+        glTextureParameteri(_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTextureParameteri(_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        constexpr GLint swizzle[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
+        glTextureParameteriv(_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
+
+        glTextureStorage2D(_id, 1, GL_R32F, _width, _height);
     }
 
     void Mask::allocate(const GLsizei width, const GLsizei height, const float* data) {

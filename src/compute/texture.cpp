@@ -35,21 +35,26 @@ namespace imagegraph::compute {
     Texture::operator bool() const noexcept { return _id != 0; }
 
     void Texture::allocate(const GLsizei width, const GLsizei height) {
-        if (_id == 0) {
-            glCreateTextures(GL_TEXTURE_2D, 1, &_id);
-
-            glTextureParameteri(_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTextureParameteri(_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-            glTextureParameteri(_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTextureParameteri(_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        if (_width == width && _height == height) {
+            return;
         }
 
-        if (_width != width || _height != height) {
-            _width = width;
-            _height = height;
-            glTextureStorage2D(_id, 1, GL_RGBA32F, _width, _height);
+        if (_id) {
+            glDeleteTextures(1, &_id);
         }
+
+        _width = width;
+        _height = height;
+
+        glCreateTextures(GL_TEXTURE_2D, 1, &_id);
+
+        glTextureParameteri(_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        glTextureParameteri(_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glTextureStorage2D(_id, 1, GL_RGBA32F, _width, _height);
     }
 
     void Texture::allocate(const GLsizei width, const GLsizei height, const float* data) {
