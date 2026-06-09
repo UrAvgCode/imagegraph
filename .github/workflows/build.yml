@@ -1,0 +1,50 @@
+name: build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwayland-dev \
+            libxkbcommon-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxrandr-dev \
+            libdbus-1-dev \
+            libgl1-mesa-dev \
+            python3-jinja2
+
+      - name: configure cmake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDOWNLOAD_MODELS=OFF
+
+      - name: build
+        run: cmake --build ${{github.workspace}}/build -j
+
+      - name: install
+        run: cmake --install ${{github.workspace}}/build --prefix ${{github.workspace}}/install
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: install
+          path: ${{github.workspace}}/install/
+          retention-days: 7

@@ -50,7 +50,7 @@ namespace imagegraph {
                         const auto io = ImGui::GetIO();
 
                         if (hovered && io.MouseWheel != 0.0f) {
-                            const float factor = std::powf(1.2f, io.MouseWheel);
+                            const float factor = std::pow(1.2f, io.MouseWheel);
                             const auto mouse_pos = ImVec2(io.MousePos.x - canvas_pos.x, io.MousePos.y - canvas_pos.y);
                             output_node->zoom_at(factor, mouse_pos);
                         }
