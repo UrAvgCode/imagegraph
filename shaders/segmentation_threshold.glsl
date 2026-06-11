@@ -3,7 +3,7 @@
 layout (local_size_x = 16, local_size_y = 16) in;
 
 layout (binding = 0) uniform sampler2D u_input;
-layout (binding = 1, r32f) uniform writeonly image2D u_output;
+layout (binding = 1, r16f) uniform writeonly image2D u_output;
 
 layout (location = 0) uniform float u_threshold;
 

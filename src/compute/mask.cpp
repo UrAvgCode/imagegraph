@@ -57,7 +57,7 @@ namespace imagegraph::compute {
         constexpr GLint swizzle[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
         glTextureParameteriv(_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
 
-        glTextureStorage2D(_id, 1, GL_R32F, _width, _height);
+        glTextureStorage2D(_id, 1, GL_R16F, _width, _height);
     }
 
     void Mask::allocate(const GLsizei width, const GLsizei height, const float* data) {
@@ -72,7 +72,7 @@ namespace imagegraph::compute {
 
     void Mask::bind_image(const GLuint unit, const GLenum access) const {
         assert(_id != 0);
-        glBindImageTexture(unit, _id, 0, GL_FALSE, 0, access, GL_R32F);
+        glBindImageTexture(unit, _id, 0, GL_FALSE, 0, access, GL_R16F);
     }
 
     GLuint Mask::id() const { return _id; }

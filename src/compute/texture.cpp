@@ -54,7 +54,7 @@ namespace imagegraph::compute {
         glTextureParameteri(_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTextureParameteri(_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glTextureStorage2D(_id, 1, GL_RGBA32F, _width, _height);
+        glTextureStorage2D(_id, 1, GL_RGBA16F, _width, _height);
     }
 
     void Texture::allocate(const GLsizei width, const GLsizei height, const float* data) {
@@ -64,7 +64,7 @@ namespace imagegraph::compute {
 
     void Texture::bind_image(const GLuint unit, const GLenum access) const {
         assert(_id != 0);
-        glBindImageTexture(unit, _id, 0, GL_FALSE, 0, access, GL_RGBA32F);
+        glBindImageTexture(unit, _id, 0, GL_FALSE, 0, access, GL_RGBA16F);
     }
 
     GLuint Texture::id() const { return _id; }

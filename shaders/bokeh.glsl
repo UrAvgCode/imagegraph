@@ -2,8 +2,8 @@
 
 layout (local_size_x = 16, local_size_y = 16) in;
 
-layout (binding = 0, rgba32f) uniform readonly image2D u_input;
-layout (binding = 1, rgba32f) uniform writeonly image2D u_output;
+layout (binding = 0, rgba16f) uniform readonly image2D u_input;
+layout (binding = 1, rgba16f) uniform writeonly image2D u_output;
 layout (binding = 2) uniform sampler2D u_depth;
 
 layout (location = 0) uniform float u_focus;

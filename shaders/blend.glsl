@@ -2,10 +2,10 @@
 
 layout (local_size_x = 16, local_size_y = 16) in;
 
-layout (binding = 0, rgba32f) uniform readonly image2D u_base;
-layout (binding = 1, rgba32f) uniform readonly image2D u_blend;
+layout (binding = 0, rgba16f) uniform readonly image2D u_base;
+layout (binding = 1, rgba16f) uniform readonly image2D u_blend;
 layout (binding = 2) uniform sampler2D u_mask;
-layout (binding = 3, rgba32f) uniform writeonly image2D u_output;
+layout (binding = 3, rgba16f) uniform writeonly image2D u_output;
 
 layout (location = 0) uniform bool u_use_mask;
 
