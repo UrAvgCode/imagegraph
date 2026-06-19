@@ -5,7 +5,10 @@
 #include <shader/color_intensity.h>
 
 namespace imagegraph::nodes {
-    ColorIntensityNode::ColorIntensityNode() : _saturation(1.0f), _vibrance(0.0f) {
+    ColorIntensityNode::ColorIntensityNode() : ColorIntensityNode(1.0f, 0.0f) {}
+
+    ColorIntensityNode::ColorIntensityNode(const float saturation, const float vibrance) :
+        _saturation(saturation), _vibrance(vibrance) {
         _input_pins.emplace_back(graph::Pin::Type::Texture, this);
         _output_pins.emplace_back(graph::Pin::Type::Texture, this);
 

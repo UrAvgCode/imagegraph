@@ -8,6 +8,7 @@ namespace imagegraph::nodes {
     class ColorIntensityNode final : public graph::Node {
     public:
         ColorIntensityNode();
+        ColorIntensityNode(float saturation, float vibrance);
 
         void draw() override;
         void evaluate() override;

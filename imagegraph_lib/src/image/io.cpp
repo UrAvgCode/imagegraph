@@ -13,6 +13,25 @@
 #include <vector>
 
 namespace imagegraph::image {
+    Image load_from_memory(const std::uint8_t* buffer, const int length) {
+        int width = 0;
+        int height = 0;
+        int channels = 0;
+
+        stbi_ldr_to_hdr_scale(1.0f);
+        stbi_ldr_to_hdr_gamma(1.0f);
+        const auto data = stbi_loadf_from_memory(buffer, length, &width, &height, &channels, STBI_rgb_alpha);
+        if (!data) {
+            std::fprintf(stderr, "failed to load image from memory (%s)\n", stbi_failure_reason());
+            return {};
+        }
+
+        const auto result = Image(width, height, STBI_rgb_alpha, data);
+        stbi_image_free(data);
+
+        return result;
+    }
+
     Image load_from_file(const std::filesystem::path& path) {
         int width = 0;
         int height = 0;

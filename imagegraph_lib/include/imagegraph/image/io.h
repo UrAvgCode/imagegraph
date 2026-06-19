@@ -6,6 +6,8 @@
 #include <future>
 
 namespace imagegraph::image {
+    Image load_from_memory(const std::uint8_t*, int);
+
     Image load_from_file(const std::filesystem::path&);
 
     std::future<Image> load_from_file_async(std::filesystem::path);

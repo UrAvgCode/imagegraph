@@ -16,3 +16,5 @@ add_subdirectory(external)
 
 add_subdirectory(imagegraph_lib)
 add_subdirectory(imagegraph)
+
+add_subdirectory(benchmarks)
