@@ -1,8 +1,8 @@
-#include <windows/main_menu_bar.h>
+#include <imagegraph/windows/main_menu_bar.h>
 
 #include <GLFW/glfw3.h>
 
-#include <platform/file_dialog.h>
+#include <imagegraph/platform/file_dialog.h>
 
 #include <cstdio>
 #include <fstream>

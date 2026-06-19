@@ -1,4 +1,4 @@
-#include <compute/mask.h>
+#include <imagegraph/compute/mask.h>
 
 #include <cassert>
 

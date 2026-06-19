@@ -1,7 +1,8 @@
-#include <nodes/color_intensity_node.h>
+#include <imagegraph/nodes/color_intensity_node.h>
+
+#include <imagegraph/widgets/image_preview.h>
 
 #include <shader/color_intensity.h>
-#include <widgets/image_preview.h>
 
 namespace imagegraph::nodes {
     ColorIntensityNode::ColorIntensityNode() : _saturation(1.0f), _vibrance(0.0f) {

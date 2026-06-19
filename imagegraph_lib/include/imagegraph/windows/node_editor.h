@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graph/graph.h>
+#include <imagegraph/graph/graph.h>
 
 #include <imgui_node_editor.h>
 

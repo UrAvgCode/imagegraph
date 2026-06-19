@@ -1,6 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
-#include <widgets/indeterminate_progress_bar.h>
+#include <imagegraph/widgets/indeterminate_progress_bar.h>
 
 #include <imgui_internal.h>
 

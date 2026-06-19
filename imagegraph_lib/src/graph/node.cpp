@@ -1,5 +1,5 @@
-#include <graph/ids.h>
-#include <graph/node.h>
+#include <imagegraph/graph/ids.h>
+#include <imagegraph/graph/node.h>
 
 namespace imagegraph::graph {
     Node::Node() : _id(generate_unique_node_id()), _modified(false) {}

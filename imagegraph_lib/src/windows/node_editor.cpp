@@ -1,14 +1,14 @@
-#include <windows/node_editor.h>
+#include <imagegraph/windows/node_editor.h>
 
-#include <nodes/blend_node.h>
-#include <nodes/bokeh_node.h>
-#include <nodes/brightness_contrast_node.h>
-#include <nodes/color_intensity_node.h>
-#include <nodes/depth_node.h>
-#include <nodes/gaussian_blur_node.h>
-#include <nodes/input_node.h>
-#include <nodes/output_node.h>
-#include <nodes/segment_node.h>
+#include <imagegraph/nodes/blend_node.h>
+#include <imagegraph/nodes/bokeh_node.h>
+#include <imagegraph/nodes/brightness_contrast_node.h>
+#include <imagegraph/nodes/color_intensity_node.h>
+#include <imagegraph/nodes/depth_node.h>
+#include <imagegraph/nodes/gaussian_blur_node.h>
+#include <imagegraph/nodes/input_node.h>
+#include <imagegraph/nodes/output_node.h>
+#include <imagegraph/nodes/segment_node.h>
 
 #include <memory>
 #include <string>

@@ -1,8 +1,8 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
-#include <graph/ids.h>
-#include <graph/node.h>
-#include <graph/pin.h>
+#include <imagegraph/graph/ids.h>
+#include <imagegraph/graph/node.h>
+#include <imagegraph/graph/pin.h>
 
 #include <imgui_internal.h>
 

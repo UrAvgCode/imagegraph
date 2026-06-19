@@ -1,6 +1,6 @@
 #pragma once
 
-#include <windows/node_editor.h>
+#include <imagegraph/windows/node_editor.h>
 
 namespace imagegraph {
     class MainMenuBar {

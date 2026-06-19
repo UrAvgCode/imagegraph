@@ -2,9 +2,9 @@
 
 #include <onnxruntime_cxx_api.h>
 
-#include <compute/compute_program.h>
-#include <compute/mask.h>
-#include <graph/node.h>
+#include <imagegraph/compute/compute_program.h>
+#include <imagegraph/compute/mask.h>
+#include <imagegraph/graph/node.h>
 
 #include <array>
 #include <future>

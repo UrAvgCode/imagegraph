@@ -1,4 +1,4 @@
-#include <image/preprocess.h>
+#include <imagegraph/image/preprocess.h>
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec3.hpp>

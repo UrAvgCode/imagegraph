@@ -1,8 +1,9 @@
-#include <nodes/blend_node.h>
+#include <imagegraph/nodes/blend_node.h>
 
-#include <compute/mask.h>
+#include <imagegraph/compute/mask.h>
+#include <imagegraph/widgets/image_preview.h>
+
 #include <shader/blend.h>
-#include <widgets/image_preview.h>
 
 namespace imagegraph::nodes {
     BlendNode::BlendNode() {

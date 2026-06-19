@@ -1,13 +1,13 @@
 #pragma once
 
-#include <compute/compute_program.h>
-#include <compute/texture.h>
-#include <graph/node.h>
+#include <imagegraph/compute/compute_program.h>
+#include <imagegraph/compute/texture.h>
+#include <imagegraph/graph/node.h>
 
 namespace imagegraph::nodes {
-    class BlendNode final : public graph::Node {
+    class BrightnessContrastNode final : public graph::Node {
     public:
-        BlendNode();
+        BrightnessContrastNode();
 
         void draw() override;
         void evaluate() override;
@@ -16,6 +16,9 @@ namespace imagegraph::nodes {
         void deserialize(const nlohmann::json&) override;
 
     private:
+        float _brightness;
+        float _contrast;
+
         compute::Texture _texture;
         compute::ComputeProgram _compute_program;
     };

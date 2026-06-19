@@ -1,9 +1,9 @@
-#include <windows/output_view.h>
+#include <imagegraph/windows/output_view.h>
 
-#include <compute/transfer.h>
-#include <image/io.h>
-#include <nodes/output_node.h>
-#include <platform/file_dialog.h>
+#include <imagegraph/compute/transfer.h>
+#include <imagegraph/image/io.h>
+#include <imagegraph/nodes/output_node.h>
+#include <imagegraph/platform/file_dialog.h>
 
 #include <algorithm>
 #include <cmath>

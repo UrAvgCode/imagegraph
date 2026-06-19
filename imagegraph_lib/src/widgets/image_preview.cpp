@@ -1,6 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
-#include <widgets/image_preview.h>
+#include <imagegraph/widgets/image_preview.h>
 
 #include <imgui_internal.h>
 

@@ -1,7 +1,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include <nodes/output_node.h>
+#include <imagegraph/nodes/output_node.h>
 
-#include <widgets/image_preview.h>
+#include <imagegraph/widgets/image_preview.h>
 
 #include <misc/cpp/imgui_stdlib.h>
 

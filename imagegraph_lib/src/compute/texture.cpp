@@ -1,4 +1,4 @@
-#include <compute/texture.h>
+#include <imagegraph/compute/texture.h>
 
 #include <cassert>
 

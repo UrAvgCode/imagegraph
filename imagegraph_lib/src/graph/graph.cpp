@@ -1,4 +1,4 @@
-#include <graph/graph.h>
+#include <imagegraph/graph/graph.h>
 
 #include <cassert>
 #include <queue>

@@ -1,7 +1,8 @@
-#include <nodes/bokeh_node.h>
+#include <imagegraph/nodes/bokeh_node.h>
+
+#include <imagegraph/widgets/image_preview.h>
 
 #include <shader/bokeh.h>
-#include <widgets/image_preview.h>
 
 #include <algorithm>
 

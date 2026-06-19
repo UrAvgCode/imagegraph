@@ -1,7 +1,8 @@
-#include <nodes/brightness_contrast_node.h>
+#include <imagegraph/nodes/brightness_contrast_node.h>
+
+#include <imagegraph/widgets/image_preview.h>
 
 #include <shader/brightness_contrast.h>
-#include <widgets/image_preview.h>
 
 namespace imagegraph::nodes {
     BrightnessContrastNode::BrightnessContrastNode() : _brightness(0.0f), _contrast(1.0f) {

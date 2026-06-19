@@ -1,4 +1,4 @@
-#include <compute/transfer.h>
+#include <imagegraph/compute/transfer.h>
 
 #include <cassert>
 

@@ -1,16 +1,13 @@
 #pragma once
 
-#include <compute/texture.h>
-#include <graph/node.h>
-#include <image/image.h>
-
-#include <future>
-#include <string>
+#include <imagegraph/compute/compute_program.h>
+#include <imagegraph/compute/texture.h>
+#include <imagegraph/graph/node.h>
 
 namespace imagegraph::nodes {
-    class InputNode final : public graph::Node {
+    class BlendNode final : public graph::Node {
     public:
-        InputNode();
+        BlendNode();
 
         void draw() override;
         void evaluate() override;
@@ -19,8 +16,7 @@ namespace imagegraph::nodes {
         void deserialize(const nlohmann::json&) override;
 
     private:
-        std::string _path;
         compute::Texture _texture;
-        std::future<image::Image> _future;
+        compute::ComputeProgram _compute_program;
     };
 } // namespace imagegraph::nodes

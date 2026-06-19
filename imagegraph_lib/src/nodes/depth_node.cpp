@@ -1,10 +1,10 @@
-#include <nodes/depth_node.h>
+#include <imagegraph/nodes/depth_node.h>
 
-#include <compute/transfer.h>
-#include <image/algorithm.h>
-#include <image/preprocess.h>
-#include <widgets/image_preview.h>
-#include <widgets/indeterminate_progress_bar.h>
+#include <imagegraph/compute/transfer.h>
+#include <imagegraph/image/algorithm.h>
+#include <imagegraph/image/preprocess.h>
+#include <imagegraph/widgets/image_preview.h>
+#include <imagegraph/widgets/indeterminate_progress_bar.h>
 
 #include <algorithm>
 #include <cstdio>

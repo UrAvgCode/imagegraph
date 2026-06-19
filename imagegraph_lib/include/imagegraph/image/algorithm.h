@@ -1,6 +1,6 @@
 #pragma once
 
-#include <image/image.h>
+#include <imagegraph/image/image.h>
 
 namespace imagegraph::image {
     struct MinMax {

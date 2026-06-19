@@ -1,9 +1,9 @@
-#include <nodes/input_node.h>
+#include <imagegraph/nodes/input_node.h>
 
-#include <compute/transfer.h>
-#include <image/io.h>
-#include <platform/file_dialog.h>
-#include <widgets/image_preview.h>
+#include <imagegraph/compute/transfer.h>
+#include <imagegraph/image/io.h>
+#include <imagegraph/platform/file_dialog.h>
+#include <imagegraph/widgets/image_preview.h>
 
 #include <misc/cpp/imgui_stdlib.h>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graph/pin.h>
+#include <imagegraph/graph/pin.h>
 
 #include <imgui_node_editor.h>
 
@@ -25,7 +25,7 @@ namespace imagegraph::graph {
         virtual void evaluate() = 0;
 
         virtual nlohmann::json serialize() const = 0;
-        virtual void deserialize(const nlohmann::json &) = 0;
+        virtual void deserialize(const nlohmann::json&) = 0;
 
         void modified();
 

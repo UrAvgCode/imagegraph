@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graph/node.h>
+#include <imagegraph/graph/node.h>
 
 #include <memory>
 #include <span>

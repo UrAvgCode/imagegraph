@@ -1,4 +1,4 @@
-#include <compute/compute_program.h>
+#include <imagegraph/compute/compute_program.h>
 
 #include <glm/gtc/type_ptr.hpp>
 

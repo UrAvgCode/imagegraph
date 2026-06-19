@@ -1,8 +1,8 @@
 #pragma once
 
-#include <compute/mask.h>
-#include <compute/texture.h>
-#include <image/image.h>
+#include <imagegraph/compute/mask.h>
+#include <imagegraph/compute/texture.h>
+#include <imagegraph/image/image.h>
 
 namespace imagegraph::compute {
     image::Image download_texture(const Texture* texture);

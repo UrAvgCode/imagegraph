@@ -1,7 +1,8 @@
-#include <nodes/gaussian_blur_node.h>
+#include <imagegraph/nodes/gaussian_blur_node.h>
+
+#include <imagegraph/widgets/image_preview.h>
 
 #include <shader/gaussian_blur.h>
-#include <widgets/image_preview.h>
 
 namespace imagegraph::nodes {
     GaussianBlurNode::GaussianBlurNode() : _blur_size(3, 3) {

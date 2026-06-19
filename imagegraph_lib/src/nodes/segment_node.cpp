@@ -1,13 +1,14 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
-#include <nodes/segment_node.h>
+#include <imagegraph/nodes/segment_node.h>
 
-#include <compute/transfer.h>
-#include <image/image.h>
-#include <image/preprocess.h>
+#include <imagegraph/compute/transfer.h>
+#include <imagegraph/image/image.h>
+#include <imagegraph/image/preprocess.h>
+#include <imagegraph/widgets/image_preview.h>
+#include <imagegraph/widgets/indeterminate_progress_bar.h>
+
 #include <shader/segmentation_threshold.h>
-#include <widgets/image_preview.h>
-#include <widgets/indeterminate_progress_bar.h>
 
 #include <algorithm>
 #include <cstdio>

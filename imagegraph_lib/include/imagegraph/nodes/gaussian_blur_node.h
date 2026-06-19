@@ -1,13 +1,15 @@
 #pragma once
 
-#include <compute/compute_program.h>
-#include <compute/texture.h>
-#include <graph/node.h>
+#include <imagegraph/compute/compute_program.h>
+#include <imagegraph/compute/texture.h>
+#include <imagegraph/graph/node.h>
+
+#include <glm/glm.hpp>
 
 namespace imagegraph::nodes {
-    class BokehNode final : public graph::Node {
+    class GaussianBlurNode final : public graph::Node {
     public:
-        BokehNode();
+        GaussianBlurNode();
 
         void draw() override;
         void evaluate() override;
@@ -16,10 +18,10 @@ namespace imagegraph::nodes {
         void deserialize(const nlohmann::json&) override;
 
     private:
-        float _focus;
-        float _radius;
+        glm::ivec2 _blur_size;
 
         compute::Texture _texture;
+        compute::Texture _temp_texture;
         compute::ComputeProgram _compute_program;
     };
 } // namespace imagegraph::nodes

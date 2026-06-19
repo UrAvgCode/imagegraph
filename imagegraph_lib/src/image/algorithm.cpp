@@ -1,4 +1,4 @@
-#include <image/algorithm.h>
+#include <imagegraph/image/algorithm.h>
 
 #include <algorithm>
 

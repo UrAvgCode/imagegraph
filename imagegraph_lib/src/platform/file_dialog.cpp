@@ -1,4 +1,4 @@
-#include <platform/file_dialog.h>
+#include <imagegraph/platform/file_dialog.h>
 
 #define GLFW_EXPOSE_NATIVE_WAYLAND
 #include <nfd.hpp>

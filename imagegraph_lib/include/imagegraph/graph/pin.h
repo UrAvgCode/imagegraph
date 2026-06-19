@@ -1,7 +1,7 @@
 #pragma once
 
-#include <compute/mask.h>
-#include <compute/texture.h>
+#include <imagegraph/compute/mask.h>
+#include <imagegraph/compute/texture.h>
 
 #include <imgui_node_editor.h>
 

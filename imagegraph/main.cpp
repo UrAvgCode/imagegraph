@@ -11,10 +11,10 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_internal.h>
 
-#include <graph/graph.h>
-#include <windows/main_menu_bar.h>
-#include <windows/node_editor.h>
-#include <windows/output_view.h>
+#include <imagegraph/graph/graph.h>
+#include <imagegraph/windows/main_menu_bar.h>
+#include <imagegraph/windows/node_editor.h>
+#include <imagegraph/windows/output_view.h>
 
 #include <cstdio>
 #include <fstream>

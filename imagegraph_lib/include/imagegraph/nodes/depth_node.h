@@ -1,8 +1,8 @@
 #pragma once
 
-#include <compute/mask.h>
-#include <graph/node.h>
-#include <image/image.h>
+#include <imagegraph/compute/mask.h>
+#include <imagegraph/graph/node.h>
+#include <imagegraph/image/image.h>
 
 #include <onnxruntime_cxx_api.h>
 

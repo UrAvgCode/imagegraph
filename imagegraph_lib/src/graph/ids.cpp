@@ -1,4 +1,4 @@
-#include <graph/ids.h>
+#include <imagegraph/graph/ids.h>
 
 namespace imagegraph::graph {
     static std::uint64_t next_id = 0;

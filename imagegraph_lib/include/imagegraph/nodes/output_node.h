@@ -1,7 +1,7 @@
 #pragma once
 
-#include <compute/texture.h>
-#include <graph/node.h>
+#include <imagegraph/compute/texture.h>
+#include <imagegraph/graph/node.h>
 
 #include <string>
 

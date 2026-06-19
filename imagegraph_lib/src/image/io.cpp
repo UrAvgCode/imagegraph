@@ -1,4 +1,4 @@
-#include <image/io.h>
+#include <imagegraph/image/io.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
