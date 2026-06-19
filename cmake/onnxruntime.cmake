@@ -13,3 +13,8 @@ set_target_properties(onnxruntime PROPERTIES
         IMPORTED_LOCATION ${onnxruntime_SOURCE_DIR}/lib/libonnxruntime.so
         INTERFACE_INCLUDE_DIRECTORIES ${onnxruntime_SOURCE_DIR}/include
 )
+
+function(install_onnxruntime_libs)
+    file(GLOB onnxruntime_libs "${onnxruntime_SOURCE_DIR}/lib/*.so*")
+    install(FILES ${onnxruntime_libs} DESTINATION lib)
+endfunction()

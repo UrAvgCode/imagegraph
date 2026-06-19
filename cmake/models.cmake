@@ -1,4 +1,4 @@
-set(model_dir "${CMAKE_BINARY_DIR}/models")
+set(model_dir "${CMAKE_CURRENT_BINARY_DIR}/models")
 file(MAKE_DIRECTORY ${model_dir})
 
 option(DOWNLOAD_MODELS "download onnx models" ON)
@@ -38,3 +38,7 @@ if (DOWNLOAD_MODELS)
             "https://huggingface.co/vietanhdev/segment-anything-2-onnx-models/resolve/main/sam2_hiera_base_plus.decoder.onnx?download=true"
     )
 endif()
+
+function(install_models)
+    install(DIRECTORY "${model_dir}" DESTINATION .)
+endfunction()

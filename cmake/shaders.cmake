@@ -1,4 +1,4 @@
-file(GLOB_RECURSE shader_files CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/shaders/*.glsl")
+file(GLOB_RECURSE shader_files CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/shaders/*.glsl")
 
 set(output_root "${CMAKE_BINARY_DIR}/generated")
 set(output_dir "${output_root}/shader")
