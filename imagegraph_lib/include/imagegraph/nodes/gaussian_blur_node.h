@@ -10,6 +10,7 @@ namespace imagegraph::nodes {
     class GaussianBlurNode final : public graph::Node {
     public:
         GaussianBlurNode();
+        GaussianBlurNode(int, int);
 
         void draw() override;
         void evaluate() override;

@@ -34,7 +34,7 @@ namespace imagegraph::benchmark {
         const auto pixel_count = input.width() * input.height();
         constexpr auto weights = glm::vec3(0.2126, 0.7152, 0.0722);
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(static)
         for (int i = 0; i < pixel_count; ++i) {
             const auto index = i * 4;
 

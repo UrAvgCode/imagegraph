@@ -10,7 +10,7 @@
 #include <limits>
 
 namespace {
-    constexpr std::size_t iterations = 100;
+    constexpr std::size_t iterations = 10;
 
     struct BenchmarkAbsDiff {
         float min = std::numeric_limits<float>::max();

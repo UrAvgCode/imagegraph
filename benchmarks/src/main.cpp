@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <benchmark/benchmarks/blur_benchmark.h>
 #include <benchmark/benchmarks/grayscale_benchmark.h>
 
 #include <cstdio>
@@ -22,6 +23,8 @@ int main() {
         return 1;
     }
 
-    auto grayscale_test = imagegraph::benchmark::GrayscaleBenchmark();
-    grayscale_test.run();
+    auto grayscale_benchmark = imagegraph::benchmark::GrayscaleBenchmark();
+    auto blur_benchmark = imagegraph::benchmark::BlurBenchmark();
+    grayscale_benchmark.run();
+    blur_benchmark.run();
 }

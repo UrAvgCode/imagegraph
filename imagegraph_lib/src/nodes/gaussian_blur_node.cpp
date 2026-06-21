@@ -5,7 +5,9 @@
 #include <shader/gaussian_blur.h>
 
 namespace imagegraph::nodes {
-    GaussianBlurNode::GaussianBlurNode() : _blur_size(3, 3) {
+    GaussianBlurNode::GaussianBlurNode() : GaussianBlurNode(3, 3) {}
+
+    GaussianBlurNode::GaussianBlurNode(const int size_x, const int size_y) : _blur_size(size_x, size_y) {
         _input_pins.emplace_back(graph::Pin::Type::Texture, this);
         _output_pins.emplace_back(graph::Pin::Type::Texture, this);
 
