@@ -1,24 +1,35 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+from matplotlib.ticker import FuncFormatter
 
-if __name__ == '__main__':
-    df = pd.read_csv("grayscale/results.csv")
+def create_plot(csv, title):
+    df = pd.read_csv(csv)
 
     plt.figure(figsize=(10, 6))
 
-    plt.plot(df["size"], df["gpu"], marker="o", label="GPU")
-    plt.plot(df["size"], df["cpu"], marker="o", label="CPU")
-    plt.plot(df["size"], df["cpu_parallel"], marker="o", label="CPU Parallel")
+    x = range(len(df))
+    plt.plot(x, df["gpu"] / 1e6, marker="o", linewidth=2, label="GPU")
+    plt.plot(x, df["cpu"] / 1e6, marker="o", linewidth=2, label="CPU")
+    plt.plot(x, df["cpu_parallel"] / 1e6, marker="o", linewidth=2, label="CPU Parallel")
 
-    plt.xscale("log", base=2)
+    labels = [f"{s}×{s}" for s in df["size"]]
+    plt.xticks(x, labels, rotation=45)
+
     plt.yscale("log")
+    plt.gca().yaxis.set_major_formatter(
+        FuncFormatter(lambda y, _: f"{y:g} ms")
+    )
 
-    plt.xlabel("Image Size")
-    plt.ylabel("Time (ns)")
-    plt.title("Grayscale Benchmark")
+    plt.xlabel("Image Resolution")
+    plt.ylabel("Execution Time (ms)")
+    plt.title(title)
     plt.grid(True, which="both", alpha=0.3)
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig("grayscale/benchmark.png", dpi=300)
+    plt.savefig(f"{title}.pdf", bbox_inches="tight")
     plt.show()
+
+if __name__ == '__main__':
+    create_plot("grayscale/results.csv", "Grayscale")
+    create_plot("blur/results.csv", "Blur")
