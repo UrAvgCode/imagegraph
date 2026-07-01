@@ -58,8 +58,6 @@ namespace imagegraph::compute {
         void set_uniform_mat3x4(GLint, const glm::mat3x4&);
         void set_uniform_mat4x3(GLint, const glm::mat4x3&);
 
-        GLint get_uniform_location(const char*) const;
-
     private:
         GLuint _id;
         glm::uvec3 _local_size;

@@ -205,12 +205,4 @@ namespace imagegraph::compute {
     void ComputeProgram::set_uniform_mat4x3(const GLint location, const glm::mat4x3& value) {
         glProgramUniformMatrix4x3fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
-
-    GLint ComputeProgram::get_uniform_location(const char* name) const {
-        const auto location = glGetUniformLocation(_id, name);
-        if (location == -1) {
-            std::fprintf(stderr, "warning: uniform '%s' not found in program %u\n", name, _id);
-        }
-        return location;
-    }
 } // namespace imagegraph::compute
