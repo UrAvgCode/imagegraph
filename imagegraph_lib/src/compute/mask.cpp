@@ -51,8 +51,8 @@ namespace imagegraph::compute {
         glTextureParameteri(_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        glTextureParameteri(_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTextureParameteri(_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         constexpr GLint swizzle[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
         glTextureParameteriv(_id, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
