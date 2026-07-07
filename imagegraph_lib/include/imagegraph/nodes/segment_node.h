@@ -13,13 +13,13 @@
 
 namespace imagegraph::nodes {
     struct DecoderInputs {
-        Ort::Value image_embed;
-        Ort::Value high_res_feats_0;
-        Ort::Value high_res_feats_1;
-        Ort::Value point_coords;
-        Ort::Value point_labels;
-        Ort::Value mask_input;
-        Ort::Value has_mask_input;
+        Ort::Value image_embed{nullptr};
+        Ort::Value high_res_feats_0{nullptr};
+        Ort::Value high_res_feats_1{nullptr};
+        Ort::Value point_coords{nullptr};
+        Ort::Value point_labels{nullptr};
+        Ort::Value mask_input{nullptr};
+        Ort::Value has_mask_input{nullptr};
     };
 
     static_assert(sizeof(DecoderInputs) == sizeof(Ort::Value) * 7);

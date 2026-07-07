@@ -48,6 +48,14 @@ namespace imagegraph::nodes {
             constexpr auto model_path = "models/depth_anything.onnx";
             auto session_options = Ort::SessionOptions();
             session_options.SetGraphOptimizationLevel(ORT_ENABLE_ALL);
+
+            const auto cuda_options = OrtCUDAProviderOptions();
+            try {
+                session_options.AppendExecutionProvider_CUDA(cuda_options);
+            } catch (const Ort::Exception& exception) {
+                std::printf("CUDA provider unavailable, falling back to CPU: %s\n", exception.what());
+            }
+
             _session = Ort::Session(_env, model_path, session_options);
 
             const auto allocator = Ort::AllocatorWithDefaultOptions();

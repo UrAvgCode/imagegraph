@@ -34,6 +34,12 @@ sudo apt install python3-jinja2 libgl-dev
 sudo dnf install python3-jinja2 mesa-libGL-devel
 ```
 
+cuda support (optional)
+```text
+CUDA 12
+cuDNN 8
+```
+
 ## Build
 
 clone repository

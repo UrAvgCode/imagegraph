@@ -79,6 +79,32 @@ namespace {
 
         return {mask_width, mask_height, 1, mask_ptr};
     }
+
+    std::vector<std::string> get_input_names(const Ort::Session& session) {
+        const auto count = session.GetInputCount();
+        auto names = std::vector<std::string>(count);
+
+        const auto allocator = Ort::AllocatorWithDefaultOptions();
+        for (std::size_t i = 0; i < count; ++i) {
+            auto name = session.GetInputNameAllocated(i, allocator);
+            names[i] = name.get();
+        }
+
+        return names;
+    }
+
+    std::vector<std::string> get_output_names(const Ort::Session& session) {
+        const auto count = session.GetOutputCount();
+        auto names = std::vector<std::string>(count);
+
+        const auto allocator = Ort::AllocatorWithDefaultOptions();
+        for (std::size_t i = 0; i < count; ++i) {
+            auto name = session.GetOutputNameAllocated(i, allocator);
+            names[i] = name.get();
+        }
+
+        return names;
+    }
 } // namespace
 
 namespace imagegraph::nodes {
@@ -98,14 +124,21 @@ namespace imagegraph::nodes {
             auto session_options = Ort::SessionOptions();
             session_options.SetGraphOptimizationLevel(ORT_ENABLE_ALL);
 
+            const auto cuda_options = OrtCUDAProviderOptions();
+            try {
+                session_options.AppendExecutionProvider_CUDA(cuda_options);
+            } catch (const Ort::Exception& exception) {
+                std::printf("CUDA provider unavailable, falling back to CPU: %s\n", exception.what());
+            }
+
             _encoder_session = Ort::Session(_env, encoder_path, session_options);
             _decoder_session = Ort::Session(_env, decoder_path, session_options);
 
-            _encoder_input_name_storage = _encoder_session.GetInputNames();
-            _encoder_output_name_storage = _encoder_session.GetOutputNames();
+            _encoder_input_name_storage = get_input_names(_encoder_session);
+            _encoder_output_name_storage = get_output_names(_encoder_session);
 
-            _decoder_input_name_storage = _decoder_session.GetInputNames();
-            _decoder_output_name_storage = _decoder_session.GetOutputNames();
+            _decoder_input_name_storage = get_input_names(_decoder_session);
+            _decoder_output_name_storage = get_output_names(_decoder_session);
 
             std::ranges::transform(_encoder_input_name_storage, std::back_inserter(_encoder_input_names),
                                    &std::string::c_str);

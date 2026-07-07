@@ -1,8 +1,8 @@
 include(FetchContent)
 
-set(ORT_VERSION 1.26.0)
+set(ORT_VERSION 1.18.0)
 
-set(ORT_FILE onnxruntime-linux-x64-${ORT_VERSION}.tgz)
+set(ORT_FILE onnxruntime-linux-x64-gpu-cuda12-${ORT_VERSION}.tgz)
 set(ORT_URL https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/${ORT_FILE})
 
 FetchContent_Declare(onnxruntime URL ${ORT_URL})
