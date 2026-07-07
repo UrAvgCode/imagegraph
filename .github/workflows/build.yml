@@ -25,12 +25,9 @@ jobs:
           sudo apt-get install -y \
             libwayland-dev \
             libxkbcommon-dev \
-            libxcursor-dev \
-            libxi-dev \
-            libxinerama-dev \
-            libxrandr-dev \
+            xorg-dev \
             libdbus-1-dev \
-            libgl1-mesa-dev \
+            libgl-dev \
             python3-jinja2
 
       - name: configure cmake
