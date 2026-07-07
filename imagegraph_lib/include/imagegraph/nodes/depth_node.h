@@ -3,8 +3,7 @@
 #include <imagegraph/compute/mask.h>
 #include <imagegraph/graph/node.h>
 #include <imagegraph/image/image.h>
-
-#include <onnxruntime_cxx_api.h>
+#include <imagegraph/inference/depth_model.h>
 
 #include <array>
 #include <future>
@@ -22,14 +21,7 @@ namespace imagegraph::nodes {
 
     private:
         std::array<int, 2> _output_size;
-
         compute::Mask _mask;
-
-        Ort::Env _env;
-        Ort::Session _session;
-
-        std::string _input_name;
-        std::string _output_name;
 
         std::future<image::Image> _future;
         bool _processing;

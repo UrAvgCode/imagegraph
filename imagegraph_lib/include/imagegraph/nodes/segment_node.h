@@ -1,29 +1,14 @@
 #pragma once
 
-#include <onnxruntime_cxx_api.h>
-
 #include <imagegraph/compute/compute_program.h>
 #include <imagegraph/compute/mask.h>
 #include <imagegraph/graph/node.h>
+#include <imagegraph/inference/segment_model.h>
 
 #include <array>
 #include <future>
-#include <string>
-#include <vector>
 
 namespace imagegraph::nodes {
-    struct DecoderInputs {
-        Ort::Value image_embed{nullptr};
-        Ort::Value high_res_feats_0{nullptr};
-        Ort::Value high_res_feats_1{nullptr};
-        Ort::Value point_coords{nullptr};
-        Ort::Value point_labels{nullptr};
-        Ort::Value mask_input{nullptr};
-        Ort::Value has_mask_input{nullptr};
-    };
-
-    static_assert(sizeof(DecoderInputs) == sizeof(Ort::Value) * 7);
-
     class SegmentNode final : public graph::Node {
     public:
         SegmentNode();
@@ -45,25 +30,9 @@ namespace imagegraph::nodes {
         compute::Mask _logits_mask;
         compute::ComputeProgram _compute_program;
 
-        Ort::Env _env;
-        Ort::Session _encoder_session;
-        Ort::Session _decoder_session;
-
-        std::vector<std::string> _encoder_input_name_storage;
-        std::vector<std::string> _encoder_output_name_storage;
-
-        std::vector<std::string> _decoder_input_name_storage;
-        std::vector<std::string> _decoder_output_name_storage;
-
-        std::vector<const char*> _encoder_input_names;
-        std::vector<const char*> _encoder_output_names;
-
-        std::vector<const char*> _decoder_input_names;
-        std::vector<const char*> _decoder_output_names;
-
-        std::future<DecoderInputs> _future;
+        std::future<inference::DecoderInputs> _future;
         bool _processing;
 
-        DecoderInputs _decoder_inputs;
+        inference::DecoderInputs _decoder_inputs;
     };
 } // namespace imagegraph::nodes

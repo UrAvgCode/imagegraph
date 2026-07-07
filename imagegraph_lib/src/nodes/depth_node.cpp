@@ -1,69 +1,20 @@
 #include <imagegraph/nodes/depth_node.h>
 
 #include <imagegraph/compute/transfer.h>
-#include <imagegraph/image/algorithm.h>
-#include <imagegraph/image/preprocess.h>
 #include <imagegraph/widgets/image_preview.h>
 #include <imagegraph/widgets/indeterminate_progress_bar.h>
 
 #include <algorithm>
-#include <cstdio>
 #include <utility>
 
 namespace {
-    const auto memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
-
-    imagegraph::image::Image run_depth_estimation(imagegraph::image::Image input_image, Ort::Session* session,
-                                                  const std::array<int, 2> tensor_size, const std::string& input_name,
-                                                  const std::string& output_name) {
-
-        input_image.resize(tensor_size[0], tensor_size[1]);
-        auto input_tensor_values = imagegraph::image::image_to_tensor(input_image);
-
-        const auto input_shape = std::array<int64_t, 4>{1, 3, tensor_size[1], tensor_size[0]};
-        const auto input_tensor =
-                Ort::Value::CreateTensor<float>(memory_info, input_tensor_values.data(), input_tensor_values.size(),
-                                                input_shape.data(), input_shape.size());
-
-        const char* input_names[] = {input_name.c_str()};
-        const char* output_names[] = {output_name.c_str()};
-
-        const auto output_tensors = session->Run(Ort::RunOptions(), input_names, &input_tensor, 1, output_names, 1);
-        const auto output_data = output_tensors.front().GetTensorData<float>();
-
-        auto output_image = imagegraph::image::Image(tensor_size[0], tensor_size[1], 1, output_data);
-        imagegraph::image::normalize(output_image);
-        return output_image;
-    }
-} // namespace
+    auto depth_model = imagegraph::inference::DepthModel(imagegraph::inference::Device::Cuda);
+}
 
 namespace imagegraph::nodes {
-    DepthNode::DepthNode() :
-        _output_size({518, 518}), _env(ORT_LOGGING_LEVEL_ERROR, "depth_anything"), _session(nullptr),
-        _processing(false) {
+    DepthNode::DepthNode() : _output_size({518, 518}), _processing(false) {
         _input_pins.emplace_back(graph::Pin::Type::Texture, this);
         _output_pins.emplace_back(graph::Pin::Type::Mask, this);
-
-        try {
-            constexpr auto model_path = "models/depth_anything.onnx";
-            auto session_options = Ort::SessionOptions();
-            session_options.SetGraphOptimizationLevel(ORT_ENABLE_ALL);
-
-            const auto cuda_options = OrtCUDAProviderOptions();
-            try {
-                session_options.AppendExecutionProvider_CUDA(cuda_options);
-            } catch (const Ort::Exception& exception) {
-                std::printf("CUDA provider unavailable, falling back to CPU: %s\n", exception.what());
-            }
-
-            _session = Ort::Session(_env, model_path, session_options);
-
-            const auto allocator = Ort::AllocatorWithDefaultOptions();
-            _input_name = _session.GetInputNameAllocated(0, allocator).get();
-            _output_name = _session.GetOutputNameAllocated(0, allocator).get();
-        } catch (const std::exception& exception) {
-            std::printf("%s\n", exception.what());
-        }
     }
 
     void DepthNode::draw() {
@@ -142,8 +93,8 @@ namespace imagegraph::nodes {
         }
 
         auto input_data = compute::download_texture(input_texture);
-        _future = std::async(std::launch::async, run_depth_estimation, std::move(input_data), &_session, _output_size,
-                             _input_name, _output_name);
+        _future = std::async(std::launch::async, &inference::DepthModel::run, &depth_model, std::move(input_data),
+                             _output_size);
 
         _processing = true;
     }
