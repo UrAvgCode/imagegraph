@@ -1,3 +1,5 @@
+include(models)
+
 find_package(OpenMP REQUIRED)
 
 file(GLOB_RECURSE source_files CONFIGURE_DEPENDS src/*.cpp)

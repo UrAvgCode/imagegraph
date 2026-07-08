@@ -6,7 +6,6 @@
 #include <cmath>
 #include <format>
 #include <fstream>
-#include <iostream>
 #include <limits>
 
 namespace {
