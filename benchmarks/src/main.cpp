@@ -5,6 +5,7 @@
 #include <benchmark/benchmarks/blur_benchmark.h>
 #include <benchmark/benchmarks/depth_model_benchmark.h>
 #include <benchmark/benchmarks/grayscale_benchmark.h>
+#include <benchmark/benchmarks/segment_model_benchmark.h>
 
 #include <cstdio>
 
@@ -24,6 +25,10 @@ int main() {
         return 1;
     }
 
+    {
+        auto segment_benchmark = imagegraph::benchmark::SegmentModelBenchmark();
+        segment_benchmark.run();
+    }
     {
         auto depth_benchmark = imagegraph::benchmark::DepthModelBenchmark();
         depth_benchmark.run();
