@@ -83,126 +83,127 @@ namespace imagegraph::compute {
 
     GLuint ComputeProgram::id() const { return _id; }
 
-    void ComputeProgram::set_uniform_float(const GLint location, const GLfloat value) {
+    void ComputeProgram::set_uniform_float(const GLint location, const GLfloat value) const {
         glProgramUniform1f(_id, location, value);
     }
 
-    void ComputeProgram::set_uniform_int(const GLint location, const GLint value) {
+    void ComputeProgram::set_uniform_int(const GLint location, const GLint value) const {
         glProgramUniform1i(_id, location, value);
     }
 
-    void ComputeProgram::set_uniform_uint(const GLint location, const GLuint value) {
+    void ComputeProgram::set_uniform_uint(const GLint location, const GLuint value) const {
         glProgramUniform1ui(_id, location, value);
     }
 
-    void ComputeProgram::set_uniform_vec2(const GLint location, const GLfloat x, const GLfloat y) {
+    void ComputeProgram::set_uniform_vec2(const GLint location, const GLfloat x, const GLfloat y) const {
         glProgramUniform2f(_id, location, x, y);
     }
 
-    void ComputeProgram::set_uniform_vec2(const GLint location, const glm::vec2& value) {
+    void ComputeProgram::set_uniform_vec2(const GLint location, const glm::vec2& value) const {
         glProgramUniform2fv(_id, location, 1, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_vec3(const GLint location, const GLfloat x, const GLfloat y, const GLfloat z) {
+    void ComputeProgram::set_uniform_vec3(const GLint location, const GLfloat x, const GLfloat y,
+                                          const GLfloat z) const {
         glProgramUniform3f(_id, location, x, y, z);
     }
 
-    void ComputeProgram::set_uniform_vec3(const GLint location, const glm::vec3& value) {
+    void ComputeProgram::set_uniform_vec3(const GLint location, const glm::vec3& value) const {
         glProgramUniform3fv(_id, location, 1, glm::value_ptr(value));
     }
 
     void ComputeProgram::set_uniform_vec4(const GLint location, const GLfloat x, const GLfloat y, const GLfloat z,
-                                          const GLfloat w) {
+                                          const GLfloat w) const {
         glProgramUniform4f(_id, location, x, y, z, w);
     }
 
-    void ComputeProgram::set_uniform_vec4(const GLint location, const glm::vec4& value) {
+    void ComputeProgram::set_uniform_vec4(const GLint location, const glm::vec4& value) const {
         glProgramUniform4fv(_id, location, 1, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_ivec2(const GLint location, const GLint x, const GLint y) {
+    void ComputeProgram::set_uniform_ivec2(const GLint location, const GLint x, const GLint y) const {
         glProgramUniform2i(_id, location, x, y);
     }
 
-    void ComputeProgram::set_uniform_ivec2(const GLint location, const glm::ivec2& value) {
+    void ComputeProgram::set_uniform_ivec2(const GLint location, const glm::ivec2& value) const {
         glProgramUniform2iv(_id, location, 1, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_ivec3(const GLint location, const GLint x, const GLint y, const GLint z) {
+    void ComputeProgram::set_uniform_ivec3(const GLint location, const GLint x, const GLint y, const GLint z) const {
         glProgramUniform3i(_id, location, x, y, z);
     }
 
-    void ComputeProgram::set_uniform_ivec3(const GLint location, const glm::ivec3& value) {
+    void ComputeProgram::set_uniform_ivec3(const GLint location, const glm::ivec3& value) const {
         glProgramUniform3iv(_id, location, 1, glm::value_ptr(value));
     }
 
     void ComputeProgram::set_uniform_ivec4(const GLint location, const GLint x, const GLint y, const GLint z,
-                                           const GLint w) {
+                                           const GLint w) const {
         glProgramUniform4i(_id, location, x, y, z, w);
     }
 
-    void ComputeProgram::set_uniform_ivec4(const GLint location, const glm::ivec4& value) {
+    void ComputeProgram::set_uniform_ivec4(const GLint location, const glm::ivec4& value) const {
         glProgramUniform4iv(_id, location, 1, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_uvec2(const GLint location, const GLuint x, const GLuint y) {
+    void ComputeProgram::set_uniform_uvec2(const GLint location, const GLuint x, const GLuint y) const {
         glProgramUniform2ui(_id, location, x, y);
     }
 
-    void ComputeProgram::set_uniform_uvec2(const GLint location, const glm::uvec2& value) {
+    void ComputeProgram::set_uniform_uvec2(const GLint location, const glm::uvec2& value) const {
         glProgramUniform2uiv(_id, location, 1, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_uvec3(const GLint location, const GLuint x, const GLuint y, const GLuint z) {
+    void ComputeProgram::set_uniform_uvec3(const GLint location, const GLuint x, const GLuint y, const GLuint z) const {
         glProgramUniform3ui(_id, location, x, y, z);
     }
 
-    void ComputeProgram::set_uniform_uvec3(const GLint location, const glm::uvec3& value) {
+    void ComputeProgram::set_uniform_uvec3(const GLint location, const glm::uvec3& value) const {
         glProgramUniform3uiv(_id, location, 1, glm::value_ptr(value));
     }
 
     void ComputeProgram::set_uniform_uvec4(const GLint location, const GLuint x, const GLuint y, const GLuint z,
-                                           const GLuint w) {
+                                           const GLuint w) const {
         glProgramUniform4ui(_id, location, x, y, z, w);
     }
 
-    void ComputeProgram::set_uniform_uvec4(const GLint location, const glm::uvec4& value) {
+    void ComputeProgram::set_uniform_uvec4(const GLint location, const glm::uvec4& value) const {
         glProgramUniform4uiv(_id, location, 1, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_mat2(const GLint location, const glm::mat2& value) {
+    void ComputeProgram::set_uniform_mat2(const GLint location, const glm::mat2& value) const {
         glProgramUniformMatrix2fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_mat3(const GLint location, const glm::mat3& value) {
+    void ComputeProgram::set_uniform_mat3(const GLint location, const glm::mat3& value) const {
         glProgramUniformMatrix3fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_mat4(const GLint location, const glm::mat4& value) {
+    void ComputeProgram::set_uniform_mat4(const GLint location, const glm::mat4& value) const {
         glProgramUniformMatrix4fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_mat2x3(const GLint location, const glm::mat2x3& value) {
+    void ComputeProgram::set_uniform_mat2x3(const GLint location, const glm::mat2x3& value) const {
         glProgramUniformMatrix2x3fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_mat3x2(const GLint location, const glm::mat3x2& value) {
+    void ComputeProgram::set_uniform_mat3x2(const GLint location, const glm::mat3x2& value) const {
         glProgramUniformMatrix3x2fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_mat2x4(const GLint location, const glm::mat2x4& value) {
+    void ComputeProgram::set_uniform_mat2x4(const GLint location, const glm::mat2x4& value) const {
         glProgramUniformMatrix2x4fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_mat4x2(const GLint location, const glm::mat4x2& value) {
+    void ComputeProgram::set_uniform_mat4x2(const GLint location, const glm::mat4x2& value) const {
         glProgramUniformMatrix4x2fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_mat3x4(const GLint location, const glm::mat3x4& value) {
+    void ComputeProgram::set_uniform_mat3x4(const GLint location, const glm::mat3x4& value) const {
         glProgramUniformMatrix3x4fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void ComputeProgram::set_uniform_mat4x3(const GLint location, const glm::mat4x3& value) {
+    void ComputeProgram::set_uniform_mat4x3(const GLint location, const glm::mat4x3& value) const {
         glProgramUniformMatrix4x3fv(_id, location, 1, GL_FALSE, glm::value_ptr(value));
     }
 } // namespace imagegraph::compute
