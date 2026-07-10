@@ -25,21 +25,27 @@ namespace imagegraph::inference {
     }
 
     DecoderInputs SegmentModel::encode(image::Image input_image) {
-        input_image.resize(tensor_width, tensor_height);
-        auto tensor_values = imagegraph::image::image_to_tensor(input_image);
+        try {
+            input_image.resize(tensor_width, tensor_height);
+            auto tensor_values = imagegraph::image::image_to_tensor(input_image);
 
-        constexpr auto input_shape = std::array<int64_t, 4>{1, 3, tensor_height, tensor_width};
-        const auto encoder_input_tensor = Ort::Value::CreateTensor<float>(
-                memory_info, tensor_values.data(), tensor_values.size(), input_shape.data(), input_shape.size());
+            constexpr auto input_shape = std::array<int64_t, 4>{1, 3, tensor_height, tensor_width};
+            const auto encoder_input_tensor = Ort::Value::CreateTensor<float>(
+                    memory_info, tensor_values.data(), tensor_values.size(), input_shape.data(), input_shape.size());
 
-        const auto run_options = Ort::RunOptions();
-        auto outputs = _encoder_session.Run(run_options, _encoder_input_names.data(), &encoder_input_tensor,
-                                            _encoder_input_names.size(), _encoder_output_names.data(),
-                                            _encoder_output_names.size());
+            const auto run_options = Ort::RunOptions();
+            auto outputs = _encoder_session.Run(run_options, _encoder_input_names.data(), &encoder_input_tensor,
+                                                _encoder_input_names.size(), _encoder_output_names.data(),
+                                                _encoder_output_names.size());
 
-        return {.image_embed = std::move(outputs[2]),
-                .high_res_feats_0 = std::move(outputs[0]),
-                .high_res_feats_1 = std::move(outputs[1])};
+            return {.image_embed = std::move(outputs[2]),
+                    .high_res_feats_0 = std::move(outputs[0]),
+                    .high_res_feats_1 = std::move(outputs[1])};
+
+        } catch (Ort::Exception& exception) {
+            std::fprintf(stderr, "%s\n", exception.what());
+            return {};
+        }
     }
 
     image::Image SegmentModel::decode(DecoderInputs& inputs, const std::array<float, 2> uv) {
