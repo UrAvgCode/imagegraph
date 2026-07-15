@@ -5,18 +5,14 @@
 #include <imagegraph/compute/transfer.h>
 #include <imagegraph/image/image.h>
 #include <imagegraph/image/preprocess.h>
+#include <imagegraph/inference/environment.h>
 #include <imagegraph/widgets/image_preview.h>
 #include <imagegraph/widgets/indeterminate_progress_bar.h>
 
 #include <shader/segmentation_threshold.h>
 
 #include <algorithm>
-#include <cstdio>
 #include <utility>
-
-namespace {
-    auto segment_model = imagegraph::inference::SegmentModel(imagegraph::inference::Device::Cuda);
-}
 
 namespace imagegraph::nodes {
     SegmentNode::SegmentNode() :
@@ -129,7 +125,7 @@ namespace imagegraph::nodes {
             _modified = false;
 
             auto input_data = compute::download_texture(input_texture);
-            _future = std::async(std::launch::async, &inference::SegmentModel::encode, &segment_model,
+            _future = std::async(std::launch::async, &inference::SegmentModel::encode, inference::get_segment_model(),
                                  std::move(input_data));
 
             _processing = true;
@@ -139,7 +135,7 @@ namespace imagegraph::nodes {
         if (_uv_modified && _decoder_inputs.image_embed != nullptr) {
             _uv_modified = false;
 
-            const auto result = segment_model.decode(_decoder_inputs, _uv);
+            const auto result = inference::get_segment_model()->decode(_decoder_inputs, _uv);
 
             compute::upload_mask(result, &_logits_mask);
             _threshold_modified = true;

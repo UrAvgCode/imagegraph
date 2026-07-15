@@ -2,6 +2,7 @@
 
 #include <imagegraph/image/io.h>
 #include <imagegraph/inference/depth_model.h>
+#include <imagegraph/inference/environment.h>
 
 #include <cstdio>
 #include <format>
@@ -33,7 +34,7 @@ namespace imagegraph::benchmark {
     }
 
     std::uint64_t DepthModelBenchmark::run_model(const inference::Device device) {
-        auto depth_model = inference::DepthModel(device);
+        inference::init_environment(device);
 
         const auto image = _input_node.image();
         const auto size = std::array{image.width(), image.height()};
@@ -44,7 +45,7 @@ namespace imagegraph::benchmark {
         for (std::size_t i = 0; i < iterations; ++i) {
             const auto start = std::chrono::steady_clock::now();
 
-            output = depth_model.run(image, size);
+            output = inference::get_depth_model()->run(image, size);
 
             const auto end = std::chrono::steady_clock::now();
             const auto elapsed = std::chrono::duration<std::uint64_t, std::nano>(end - start).count();
@@ -58,6 +59,8 @@ namespace imagegraph::benchmark {
         const auto path = _output_root / subfolder / std::format("{}x{}.png", output.width(), output.height());
         std::filesystem::create_directories(path.parent_path());
         imagegraph::image::save_to_file(output, path);
+
+        inference::destroy_environment();
 
         return average;
     }

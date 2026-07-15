@@ -1,15 +1,12 @@
 #include <imagegraph/nodes/depth_node.h>
 
 #include <imagegraph/compute/transfer.h>
+#include <imagegraph/inference/environment.h>
 #include <imagegraph/widgets/image_preview.h>
 #include <imagegraph/widgets/indeterminate_progress_bar.h>
 
 #include <algorithm>
 #include <utility>
-
-namespace {
-    auto depth_model = imagegraph::inference::DepthModel(imagegraph::inference::Device::Cuda);
-}
 
 namespace imagegraph::nodes {
     DepthNode::DepthNode() : _output_size({518, 518}), _processing(false) {
@@ -93,8 +90,8 @@ namespace imagegraph::nodes {
         }
 
         auto input_data = compute::download_texture(input_texture);
-        _future = std::async(std::launch::async, &inference::DepthModel::run, &depth_model, std::move(input_data),
-                             _output_size);
+        _future = std::async(std::launch::async, &inference::DepthModel::run, inference::get_depth_model(),
+                             std::move(input_data), _output_size);
 
         _processing = true;
     }

@@ -2,6 +2,7 @@
 
 #include <imagegraph/image/algorithm.h>
 #include <imagegraph/image/preprocess.h>
+#include <imagegraph/inference/session.h>
 
 #include <cassert>
 

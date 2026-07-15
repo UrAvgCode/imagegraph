@@ -1,6 +1,7 @@
 #include <imagegraph/inference/segment_model.h>
 
 #include <imagegraph/image/preprocess.h>
+#include <imagegraph/inference/session.h>
 
 #include <cassert>
 

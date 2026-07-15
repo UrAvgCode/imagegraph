@@ -12,6 +12,7 @@
 #include <imgui_internal.h>
 
 #include <imagegraph/graph/graph.h>
+#include <imagegraph/inference/environment.h>
 #include <imagegraph/windows/main_menu_bar.h>
 #include <imagegraph/windows/node_editor.h>
 #include <imagegraph/windows/output_view.h>
@@ -173,7 +174,11 @@ int main() {
     initialize_glad();
     initialize_imgui(window);
 
+    imagegraph::inference::init_environment();
+
     run(window);
+
+    imagegraph::inference::destroy_environment();
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

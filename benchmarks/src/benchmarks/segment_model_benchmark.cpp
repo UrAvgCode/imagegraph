@@ -1,6 +1,7 @@
 #include <benchmark/benchmarks/segment_model_benchmark.h>
 
 #include <imagegraph/image/io.h>
+#include <imagegraph/inference/environment.h>
 #include <imagegraph/inference/segment_model.h>
 
 #include <cstdio>
@@ -30,7 +31,7 @@ namespace imagegraph::benchmark {
     }
 
     std::array<std::uint64_t, 2> SegmentModelBenchmark::run_model(const inference::Device device) {
-        auto segment_model = inference::SegmentModel(device);
+        inference::init_environment(device);
 
         const auto image = _input_node.image();
         auto decoder_inputs = inference::DecoderInputs();
@@ -39,7 +40,7 @@ namespace imagegraph::benchmark {
         for (std::size_t i = 0; i < iterations; ++i) {
             const auto start = std::chrono::steady_clock::now();
 
-            decoder_inputs = segment_model.encode(image);
+            decoder_inputs = inference::get_segment_model()->encode(image);
 
             const auto end = std::chrono::steady_clock::now();
             const auto elapsed = std::chrono::duration<std::uint64_t, std::nano>(end - start).count();
@@ -55,7 +56,7 @@ namespace imagegraph::benchmark {
         for (std::size_t i = 0; i < iterations; ++i) {
             const auto start = std::chrono::steady_clock::now();
 
-            output = segment_model.decode(decoder_inputs, {0.5, 0.5});
+            output = inference::get_segment_model()->decode(decoder_inputs, {0.5, 0.5});
 
             const auto end = std::chrono::steady_clock::now();
             const auto elapsed = std::chrono::duration<std::uint64_t, std::nano>(end - start).count();
@@ -69,6 +70,8 @@ namespace imagegraph::benchmark {
         const auto path = _output_root / subfolder / std::format("{}x{}.png", output.width(), output.height());
         std::filesystem::create_directories(path.parent_path());
         imagegraph::image::save_to_file(output, path);
+
+        inference::destroy_environment();
 
         return {average_encoder, average_decoder};
     }
