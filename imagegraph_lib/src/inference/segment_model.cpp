@@ -1,7 +1,8 @@
 #include <imagegraph/inference/segment_model.h>
 
 #include <imagegraph/image/preprocess.h>
-#include <imagegraph/inference/session.h>
+
+#include <onnxruntime_run_options_config_keys.h>
 
 #include <cassert>
 
@@ -34,7 +35,9 @@ namespace imagegraph::inference {
             const auto encoder_input_tensor = Ort::Value::CreateTensor<float>(
                     memory_info, tensor_values.data(), tensor_values.size(), input_shape.data(), input_shape.size());
 
-            const auto run_options = Ort::RunOptions();
+            auto run_options = Ort::RunOptions();
+            run_options.AddConfigEntry(kOrtRunOptionsConfigEnableMemoryArenaShrinkage, "gpu:0");
+
             auto outputs = _encoder_session.Run(run_options, _encoder_input_names.data(), &encoder_input_tensor,
                                                 _encoder_input_names.size(), _encoder_output_names.data(),
                                                 _encoder_output_names.size());

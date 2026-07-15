@@ -2,7 +2,8 @@
 
 #include <imagegraph/image/algorithm.h>
 #include <imagegraph/image/preprocess.h>
-#include <imagegraph/inference/session.h>
+
+#include <onnxruntime_run_options_config_keys.h>
 
 #include <cassert>
 
@@ -28,10 +29,11 @@ namespace imagegraph::inference {
                     Ort::Value::CreateTensor<float>(memory_info, input_tensor_values.data(), input_tensor_values.size(),
                                                     input_shape.data(), input_shape.size());
 
+            auto run_options = Ort::RunOptions();
+            run_options.AddConfigEntry(kOrtRunOptionsConfigEnableMemoryArenaShrinkage, "gpu:0");
 
-            const auto output_tensors = _session.Run(Ort::RunOptions(), _input_names.data(), &input_tensor,
+            const auto output_tensors = _session.Run(run_options, _input_names.data(), &input_tensor,
                                                      _input_names.size(), _output_names.data(), _output_names.size());
-
 
             const auto output_data = output_tensors.front().GetTensorData<float>();
 
