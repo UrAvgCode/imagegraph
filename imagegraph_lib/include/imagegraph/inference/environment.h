@@ -2,14 +2,19 @@
 
 #include <imagegraph/inference/depth_model.h>
 #include <imagegraph/inference/segment_model.h>
-#include <imagegraph/inference/session.h>
 
 namespace imagegraph::inference {
-    void init_environment(Device = Device::Cuda);
+    enum class Device { Auto, Cpu, Cuda };
+
+    void init_environment(Device = Device::Auto);
 
     void destroy_environment();
 
-    Ort::Env* get_environment();
+    const Ort::Env& get_environment();
+
+    const Ort::SessionOptions& get_session_options();
+
+    const Ort::RunOptions& get_run_options();
 
     DepthModel* get_depth_model();
 

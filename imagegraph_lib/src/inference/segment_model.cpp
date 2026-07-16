@@ -1,8 +1,7 @@
 #include <imagegraph/inference/segment_model.h>
 
 #include <imagegraph/image/preprocess.h>
-
-#include <onnxruntime_run_options_config_keys.h>
+#include <imagegraph/inference/environment.h>
 
 #include <cassert>
 
@@ -15,9 +14,9 @@ namespace {
 namespace imagegraph::inference {
     Ort::Value* DecoderInputs::data() { return &image_embed; }
 
-    SegmentModel::SegmentModel(const Device device) :
-        _encoder_session(create_session("models/segment_anything_encoder.onnx", device)),
-        _decoder_session(create_session("models/segment_anything_decoder.onnx", device)),
+    SegmentModel::SegmentModel() :
+        _encoder_session(get_environment(), "models/segment_anything_encoder.onnx", get_session_options()),
+        _decoder_session(get_environment(), "models/segment_anything_decoder.onnx", get_session_options()),
         _encoder_input_names(input_names(_encoder_session)), _encoder_output_names(output_names(_encoder_session)),
         _decoder_input_names(input_names(_decoder_session)), _decoder_output_names(output_names(_decoder_session)) {
         assert(_encoder_input_names.size() == 1);
@@ -29,16 +28,13 @@ namespace imagegraph::inference {
     DecoderInputs SegmentModel::encode(image::Image input_image) {
         try {
             input_image.resize(tensor_width, tensor_height);
-            auto tensor_values = imagegraph::image::image_to_tensor(input_image);
+            auto tensor_values = image::image_to_tensor(input_image);
 
             constexpr auto input_shape = std::array<int64_t, 4>{1, 3, tensor_height, tensor_width};
             const auto encoder_input_tensor = Ort::Value::CreateTensor<float>(
                     memory_info, tensor_values.data(), tensor_values.size(), input_shape.data(), input_shape.size());
 
-            auto run_options = Ort::RunOptions();
-            run_options.AddConfigEntry(kOrtRunOptionsConfigEnableMemoryArenaShrinkage, "gpu:0");
-
-            auto outputs = _encoder_session.Run(run_options, _encoder_input_names.data(), &encoder_input_tensor,
+            auto outputs = _encoder_session.Run(get_run_options(), _encoder_input_names.data(), &encoder_input_tensor,
                                                 _encoder_input_names.size(), _encoder_output_names.data(),
                                                 _encoder_output_names.size());
 
@@ -79,7 +75,7 @@ namespace imagegraph::inference {
         inputs.has_mask_input = std::move(has_mask_tensor);
 
         const auto run_options = Ort::RunOptions();
-        auto outputs = _decoder_session.Run(run_options, _decoder_input_names.data(), inputs.data(),
+        auto outputs = _decoder_session.Run(get_run_options(), _decoder_input_names.data(), inputs.data(),
                                             _decoder_input_names.size(), _decoder_output_names.data(),
                                             _decoder_output_names.size());
 

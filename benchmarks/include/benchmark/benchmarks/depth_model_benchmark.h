@@ -2,7 +2,7 @@
 
 #include <benchmark/helper/input_node.h>
 
-#include <imagegraph/inference/session.h>
+#include <imagegraph/inference/environment.h>
 
 namespace imagegraph::benchmark {
     class DepthModelBenchmark {

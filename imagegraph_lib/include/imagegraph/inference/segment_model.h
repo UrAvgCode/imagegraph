@@ -1,11 +1,11 @@
 #pragma once
 
 #include <imagegraph/image/image.h>
-#include <imagegraph/inference/session.h>
 #include <imagegraph/inference/tensor_names.h>
 
 #include <onnxruntime_cxx_api.h>
 
+#include <array>
 #include <type_traits>
 
 namespace imagegraph::inference {
@@ -26,7 +26,7 @@ namespace imagegraph::inference {
 
     class SegmentModel {
     public:
-        explicit SegmentModel(Device);
+        explicit SegmentModel();
 
         DecoderInputs encode(image::Image);
         image::Image decode(DecoderInputs&, std::array<float, 2>);
