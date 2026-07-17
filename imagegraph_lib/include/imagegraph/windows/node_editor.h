@@ -1,6 +1,7 @@
 #pragma once
 
 #include <imagegraph/graph/graph.h>
+#include <imagegraph/nodes/registry.h>
 
 #include <imgui_node_editor.h>
 
@@ -22,6 +23,8 @@ namespace imagegraph {
 
         ax::NodeEditor::EditorContext* _context;
         graph::Graph* _graph;
+
+        nodes::Registry _registry;
 
         bool _navigate_to_content;
     };

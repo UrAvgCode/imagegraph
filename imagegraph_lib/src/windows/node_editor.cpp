@@ -1,15 +1,5 @@
 #include <imagegraph/windows/node_editor.h>
 
-#include <imagegraph/nodes/blend_node.h>
-#include <imagegraph/nodes/bokeh_node.h>
-#include <imagegraph/nodes/brightness_contrast_node.h>
-#include <imagegraph/nodes/color_intensity_node.h>
-#include <imagegraph/nodes/depth_node.h>
-#include <imagegraph/nodes/gaussian_blur_node.h>
-#include <imagegraph/nodes/input_node.h>
-#include <imagegraph/nodes/output_node.h>
-#include <imagegraph/nodes/segment_node.h>
-
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -68,31 +58,11 @@ namespace imagegraph {
         for (const auto node: _graph->nodes()) {
             node_ids[node] = id++;
 
-            auto node_type_name = std::string();
-            if (dynamic_cast<nodes::InputNode*>(node)) {
-                node_type_name = "input";
-            } else if (dynamic_cast<nodes::OutputNode*>(node)) {
-                node_type_name = "output";
-            } else if (dynamic_cast<nodes::BrightnessContrastNode*>(node)) {
-                node_type_name = "brightness_contrast";
-            } else if (dynamic_cast<nodes::ColorIntensityNode*>(node)) {
-                node_type_name = "color_intensity";
-            } else if (dynamic_cast<nodes::GaussianBlurNode*>(node)) {
-                node_type_name = "gaussian_blur";
-            } else if (dynamic_cast<nodes::BokehNode*>(node)) {
-                node_type_name = "bokeh";
-            } else if (dynamic_cast<nodes::BlendNode*>(node)) {
-                node_type_name = "blend";
-            } else if (dynamic_cast<nodes::DepthNode*>(node)) {
-                node_type_name = "depth";
-            } else if (dynamic_cast<nodes::SegmentNode*>(node)) {
-                node_type_name = "segment";
-            }
-
+            auto type = _registry.type(*node);
             auto position = ax::NodeEditor::GetNodePosition(node->id());
 
             json["nodes"].push_back({{"id", node_ids[node]},
-                                     {"type", node_type_name},
+                                     {"type", type},
                                      {"x", position.x},
                                      {"y", position.y},
                                      {"data", node->serialize()}});
@@ -143,26 +113,7 @@ namespace imagegraph {
             }
 
             const auto type_str = type.get<std::string>();
-            auto node = std::unique_ptr<graph::Node>();
-            if (type_str == "input") {
-                node = std::make_unique<nodes::InputNode>();
-            } else if (type_str == "output") {
-                node = std::make_unique<nodes::OutputNode>();
-            } else if (type_str == "brightness_contrast") {
-                node = std::make_unique<nodes::BrightnessContrastNode>();
-            } else if (type_str == "color_intensity") {
-                node = std::make_unique<nodes::ColorIntensityNode>();
-            } else if (type_str == "gaussian_blur") {
-                node = std::make_unique<nodes::GaussianBlurNode>();
-            } else if (type_str == "bokeh") {
-                node = std::make_unique<nodes::BokehNode>();
-            } else if (type_str == "blend") {
-                node = std::make_unique<nodes::BlendNode>();
-            } else if (type_str == "depth") {
-                node = std::make_unique<nodes::DepthNode>();
-            } else if (type == "segment") {
-                node = std::make_unique<nodes::SegmentNode>();
-            }
+            auto node = _registry.create(type_str.c_str());
 
             if (!node) {
                 continue;
@@ -258,41 +209,19 @@ namespace imagegraph {
 
         ax::NodeEditor::Suspend();
         if (ImGui::BeginPopup("Create New Node")) {
-            const graph::Node* new_node = nullptr;
+            for (const auto category: _registry.categories()) {
+                if (!ImGui::BeginMenu(category)) {
+                    continue;
+                }
 
-            if (ImGui::MenuItem("Input")) {
-                new_node = _graph->add_node(std::make_unique<nodes::InputNode>());
-            }
-            if (ImGui::MenuItem("Output")) {
-                new_node = _graph->add_node(std::make_unique<nodes::OutputNode>());
-            }
-            ImGui::Separator();
-            if (ImGui::MenuItem("Brightness/Contrast")) {
-                new_node = _graph->add_node(std::make_unique<nodes::BrightnessContrastNode>());
-            }
-            if (ImGui::MenuItem("Color Intensity")) {
-                new_node = _graph->add_node(std::make_unique<nodes::ColorIntensityNode>());
-            }
-            ImGui::Separator();
-            if (ImGui::MenuItem("Gaussian Blur")) {
-                new_node = _graph->add_node(std::make_unique<nodes::GaussianBlurNode>());
-            }
-            if (ImGui::MenuItem("Bokeh")) {
-                new_node = _graph->add_node(std::make_unique<nodes::BokehNode>());
-            }
-            if (ImGui::MenuItem("Blend")) {
-                new_node = _graph->add_node(std::make_unique<nodes::BlendNode>());
-            }
-            ImGui::Separator();
-            if (ImGui::MenuItem("Depth")) {
-                new_node = _graph->add_node(std::make_unique<nodes::DepthNode>());
-            }
-            if (ImGui::MenuItem("Segment")) {
-                new_node = _graph->add_node(std::make_unique<nodes::SegmentNode>());
-            }
+                for (const auto type: _registry.category_types(category)) {
+                    if (ImGui::MenuItem(_registry.label(type))) {
+                        const auto node = _graph->add_node(_registry.create(type));
+                        ax::NodeEditor::SetNodePosition(node->id(), open_popup_position);
+                    }
+                }
 
-            if (new_node) {
-                ax::NodeEditor::SetNodePosition(new_node->id(), open_popup_position);
+                ImGui::EndMenu();
             }
 
             ImGui::EndPopup();
