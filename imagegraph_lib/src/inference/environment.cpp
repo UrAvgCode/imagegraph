@@ -33,8 +33,13 @@ namespace imagegraph::inference {
         environment = new Ort::Env(ORT_LOGGING_LEVEL_ERROR, "imagegraph");
         environment->DisableTelemetryEvents();
 
+        const auto cpu_memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
+        const auto cpu_arena_config = Ort::ArenaCfg(0, -1, -1, -1);
+        environment->CreateAndRegisterAllocator(cpu_memory_info, cpu_arena_config);
+
         session_options = new Ort::SessionOptions();
         session_options->SetGraphOptimizationLevel(ORT_ENABLE_ALL);
+        session_options->AddConfigEntry(kOrtSessionOptionsConfigUseEnvAllocators, "1");
 
         run_options = new Ort::RunOptions();
 
@@ -45,7 +50,6 @@ namespace imagegraph::inference {
         if (device == Device::Cuda) {
             const auto provider_options = OrtCUDAProviderOptions();
             session_options->AppendExecutionProvider_CUDA(provider_options);
-            session_options->AddConfigEntry(kOrtSessionOptionsConfigUseEnvAllocators, "1");
 
             run_options->AddConfigEntry(kOrtRunOptionsConfigEnableMemoryArenaShrinkage, "gpu:0");
 
