@@ -1,6 +1,7 @@
 #pragma once
 
 #include <imagegraph/image/image.h>
+#include <imagegraph/inference/point_prompt.h>
 #include <imagegraph/inference/tensor_names.h>
 
 #include <onnxruntime_cxx_api.h>
@@ -29,7 +30,7 @@ namespace imagegraph::inference {
         explicit SegmentModel();
 
         DecoderInputs encode(image::Image);
-        image::Image decode(DecoderInputs&, std::array<float, 2>);
+        image::Image decode(DecoderInputs&, const std::vector<PointPrompt>&);
 
     private:
         Ort::Session _encoder_session;

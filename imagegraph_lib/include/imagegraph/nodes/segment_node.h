@@ -5,8 +5,8 @@
 #include <imagegraph/graph/node.h>
 #include <imagegraph/inference/segment_model.h>
 
-#include <array>
 #include <future>
+#include <vector>
 
 namespace imagegraph::nodes {
     class SegmentNode final : public graph::Node {
@@ -20,10 +20,10 @@ namespace imagegraph::nodes {
         void deserialize(const nlohmann::json&) override;
 
     private:
-        std::array<float, 2> _uv;
-        float _threshold;
+        std::vector<inference::PointPrompt> _prompts;
+        bool _prompts_modified;
 
-        bool _uv_modified;
+        float _threshold;
         bool _threshold_modified;
 
         compute::Mask _mask;

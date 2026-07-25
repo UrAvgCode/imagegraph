@@ -4,7 +4,6 @@
 
 #include <imagegraph/compute/transfer.h>
 #include <imagegraph/image/image.h>
-#include <imagegraph/image/preprocess.h>
 #include <imagegraph/inference/environment.h>
 #include <imagegraph/widgets/image_preview.h>
 #include <imagegraph/widgets/indeterminate_progress_bar.h>
@@ -16,7 +15,7 @@
 
 namespace imagegraph::nodes {
     SegmentNode::SegmentNode() :
-        _uv({0.5f, 0.5f}), _threshold(0.0f), _uv_modified(false), _threshold_modified(false), _processing(false) {
+        _prompts_modified(false), _threshold(0.0f), _threshold_modified(false), _processing(false) {
         _input_pins.emplace_back(graph::Pin::Type::Texture, this);
         _output_pins.emplace_back(graph::Pin::Type::Mask, this);
         _compute_program.load(shader::segmentation_threshold);
@@ -34,64 +33,59 @@ namespace imagegraph::nodes {
             }
             ImGui::EndGroup();
 
-            ImGui::SameLine();
+            constexpr auto preview_size = ImVec2{150.0f, 150.0f};
+            constexpr auto panel_width = preview_size.x;
 
+            constexpr float threshold_label_width = 70.0f;
+            constexpr float threshold_input_width = panel_width - threshold_label_width;
+            constexpr auto progress_bar_size = ImVec2(panel_width, 10.0f);
+
+            ImGui::SameLine();
             ImGui::BeginGroup();
             {
-                constexpr float total_width = 200.0f;
-                constexpr float label_width = 70.0f;
-                constexpr float input_width = total_width - label_width;
-
-                ImGui::PushItemWidth(input_width);
-                ImGui::TextUnformatted("UV");
-                ImGui::SameLine(label_width);
-                if (ImGui::InputFloat2("##uv", _uv.data())) {
-                    _uv[0] = std::clamp(_uv[0], 0.0f, 1.0f);
-                    _uv[1] = std::clamp(_uv[1], 0.0f, 1.0f);
-                    _uv_modified = true;
+                ImGui::BeginDisabled(_prompts.empty());
+                if (ImGui::Button("Undo") && !_prompts.empty()) {
+                    _prompts.pop_back();
+                    _prompts_modified = true;
                 }
+                ImGui::SameLine();
+                if (ImGui::Button("Clear") && !_prompts.empty()) {
+                    _prompts.clear();
+                    _prompts_modified = true;
+                }
+                ImGui::EndDisabled();
+
+                const auto input_texture = _input_pins[0].texture();
+                const auto input_id = !input_texture ? GLuint{0} : input_texture->id();
+                const auto input_size = !input_texture ? ImVec2{}
+                                                       : ImVec2{static_cast<float>(input_texture->width()),
+                                                                static_cast<float>(input_texture->height())};
+
+                if (widgets::prompt_image_preview(input_id, input_size, preview_size, _prompts)) {
+                    _prompts_modified = true;
+                }
+            }
+            ImGui::EndGroup();
+
+            ImGui::SameLine();
+            ImGui::BeginGroup();
+            {
+                ImGui::PushItemWidth(threshold_input_width);
                 ImGui::TextUnformatted("Threshold");
-                ImGui::SameLine(label_width);
+                ImGui::SameLine(threshold_label_width);
                 if (ImGui::DragFloat("##threshold", &_threshold, 0.01, 0.0f, 0.0f, "%.2f")) {
                     _threshold_modified = true;
                 }
                 ImGui::PopItemWidth();
 
-                widgets::indeterminate_progress_bar(_processing);
-
-                constexpr auto image_size = ImVec2(100, 100);
-                const auto input_texture = _input_pins[0].texture();
-
-                if (input_texture && input_texture->id() != 0) {
-                    ImGui::Image(input_texture->id(), image_size);
-                    const auto image_min = ImGui::GetItemRectMin();
-
-                    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-                        const auto mouse_pos = ImGui::GetMousePos();
-                        const auto local_pos = mouse_pos - image_min;
-
-                        const auto uv = local_pos / image_size;
-                        _uv = {uv.x, uv.y};
-                        _uv_modified = true;
-                    }
-
-                    const auto draw_list = ImGui::GetWindowDrawList();
-                    const float px = image_min.x + _uv[0] * image_size.x;
-                    const float py = image_min.y + _uv[1] * image_size.y;
-                    draw_list->AddCircleFilled(ImVec2(px, py), 2.0f, IM_COL32(255, 0, 0, 255));
-                } else {
-                    widgets::image_preview(nullptr, {0.0f, 0.0f}, image_size);
-                }
-
-                ImGui::SameLine();
+                widgets::indeterminate_progress_bar(_processing, progress_bar_size);
 
                 const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
-                widgets::image_preview(_mask.id(), mask_size, ImVec2(100, 100));
+                widgets::image_preview(_mask.id(), mask_size, preview_size);
             }
             ImGui::EndGroup();
 
             ImGui::SameLine();
-
             ImGui::BeginGroup();
             for (auto& pin: _output_pins) {
                 pin.draw();
@@ -106,7 +100,7 @@ namespace imagegraph::nodes {
         if (_processing && _future.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
             _processing = false;
             _decoder_inputs = _future.get();
-            _uv_modified = true;
+            _prompts_modified = true;
         }
 
         if (_processing) {
@@ -132,10 +126,10 @@ namespace imagegraph::nodes {
             return;
         }
 
-        if (_uv_modified && _decoder_inputs.image_embed != nullptr) {
-            _uv_modified = false;
+        if (_prompts_modified && _decoder_inputs.image_embed != nullptr) {
+            _prompts_modified = false;
 
-            const auto result = inference::get_segment_model()->decode(_decoder_inputs, _uv);
+            const auto result = inference::get_segment_model()->decode(_decoder_inputs, _prompts);
 
             compute::upload_mask(result, &_logits_mask);
             _threshold_modified = true;
@@ -157,20 +151,7 @@ namespace imagegraph::nodes {
         }
     }
 
-    nlohmann::json SegmentNode::serialize() const {
-        return {{"uv_x", _uv[0]}, {"uv_y", _uv[1]}, {"threshold", _threshold}};
-    }
+    nlohmann::json SegmentNode::serialize() const { return {}; }
 
-    void SegmentNode::deserialize(const nlohmann::json& json) {
-        if (json.contains("uv_x") && json["uv_x"].is_number()) {
-            _uv[0] = json["uv_x"].get<float>();
-        }
-        if (json.contains("uv_y") && json["uv_y"].is_number()) {
-            _uv[1] = json["uv_y"].get<float>();
-        }
-        if (json.contains("threshold") && json["threshold"].is_number()) {
-            _threshold = json["threshold"].get<float>();
-        }
-        modified();
-    }
+    void SegmentNode::deserialize(const nlohmann::json& json) { modified(); }
 } // namespace imagegraph::nodes

@@ -4,6 +4,7 @@
 #include <imagegraph/inference/environment.h>
 
 #include <cassert>
+#include <cstdint>
 
 namespace {
     constexpr int tensor_width = 1024;
@@ -30,7 +31,7 @@ namespace imagegraph::inference {
             input_image.resize(tensor_width, tensor_height);
             auto tensor_values = image::image_to_tensor(input_image);
 
-            constexpr auto input_shape = std::array<int64_t, 4>{1, 3, tensor_height, tensor_width};
+            constexpr auto input_shape = std::array<std::int64_t, 4>{1, 3, tensor_height, tensor_width};
             const auto encoder_input_tensor = Ort::Value::CreateTensor<float>(
                     memory_info, tensor_values.data(), tensor_values.size(), input_shape.data(), input_shape.size());
 
@@ -48,24 +49,34 @@ namespace imagegraph::inference {
         }
     }
 
-    image::Image SegmentModel::decode(DecoderInputs& inputs, const std::array<float, 2> uv) {
-        auto point_coords = std::array{uv[0] * tensor_width, uv[1] * tensor_height};
-        constexpr auto coords_shape = std::array<int64_t, 3>{1, 1, 2};
+    image::Image SegmentModel::decode(DecoderInputs& inputs, const std::vector<PointPrompt>& prompts) {
+        auto point_coords = std::vector<float>(prompts.size() * 2);
+        auto point_labels = std::vector<float>(prompts.size());
+
+        for (std::size_t i = 0; i < prompts.size(); ++i) {
+            const auto& [position, label] = prompts[i];
+            point_coords[i * 2] = position[0] * tensor_width;
+            point_coords[i * 2 + 1] = position[1] * tensor_height;
+            point_labels[i] = label == PointLabel::Foreground ? 1.0f : 0.0f;
+        }
+
+        const auto prompts_size = static_cast<std::int64_t>(prompts.size());
+
+        const auto coords_shape = std::array<std::int64_t, 3>{1, prompts_size, 2};
         auto coords_tensor = Ort::Value::CreateTensor<float>(memory_info, point_coords.data(), point_coords.size(),
                                                              coords_shape.data(), coords_shape.size());
 
-        auto point_labels = std::array{1.0f};
-        constexpr auto labels_shape = std::array<int64_t, 2>{1, 1};
+        const auto labels_shape = std::array<std::int64_t, 2>{1, prompts_size};
         auto labels_tensor = Ort::Value::CreateTensor<float>(memory_info, point_labels.data(), point_labels.size(),
                                                              labels_shape.data(), labels_shape.size());
 
         auto mask_input = std::array<float, 256 * 256>{};
-        constexpr auto mask_shape = std::array<int64_t, 4>{1, 1, 256, 256};
+        constexpr auto mask_shape = std::array<std::int64_t, 4>{1, 1, 256, 256};
         auto mask_tensor = Ort::Value::CreateTensor<float>(memory_info, mask_input.data(), mask_input.size(),
                                                            mask_shape.data(), mask_shape.size());
 
         auto has_mask = std::array{0.0f};
-        constexpr auto has_mask_shape = std::array<int64_t, 1>{1};
+        constexpr auto has_mask_shape = std::array<std::int64_t, 1>{1};
         Ort::Value has_mask_tensor = Ort::Value::CreateTensor<float>(memory_info, has_mask.data(), has_mask.size(),
                                                                      has_mask_shape.data(), has_mask_shape.size());
 
