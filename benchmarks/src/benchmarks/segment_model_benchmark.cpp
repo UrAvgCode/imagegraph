@@ -56,7 +56,7 @@ namespace imagegraph::benchmark {
         for (std::size_t i = 0; i < iterations; ++i) {
             const auto start = std::chrono::steady_clock::now();
 
-            output = inference::get_segment_model()->decode(decoder_inputs, {0.5, 0.5});
+            output = inference::get_segment_model()->decode(decoder_inputs, {{0.5, 0.5}, {}});
 
             const auto end = std::chrono::steady_clock::now();
             const auto elapsed = std::chrono::duration<std::uint64_t, std::nano>(end - start).count();
