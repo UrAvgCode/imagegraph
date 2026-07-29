@@ -33,11 +33,13 @@ namespace imagegraph::nodes {
             constexpr float input_width = total_width - label_width;
 
             ImGui::PushItemWidth(input_width);
+            ImGui::AlignTextToFramePadding();
             ImGui::TextUnformatted("Brightness");
             ImGui::SameLine(label_width);
             if (ImGui::DragFloat("##brightness", &_brightness, 0.01, 0.0f, 0.0f, "%.2f")) {
                 modified();
             }
+            ImGui::AlignTextToFramePadding();
             ImGui::TextUnformatted("Contrast");
             ImGui::SameLine(label_width);
             if (ImGui::DragFloat("##contrast", &_contrast, 0.01, 0.0f, 0.0f, "%.2f")) {

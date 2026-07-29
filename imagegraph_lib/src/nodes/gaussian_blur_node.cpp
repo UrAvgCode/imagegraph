@@ -34,14 +34,15 @@ namespace imagegraph::nodes {
             constexpr float label_width = 40.0f;
             constexpr float input_width = total_width - label_width;
 
-            ImGui::PushItemWidth(input_width);
+            ImGui::AlignTextToFramePadding();
             ImGui::TextUnformatted("Size");
+
             ImGui::SameLine(label_width);
+            ImGui::SetNextItemWidth(input_width);
             if (ImGui::DragInt2("##size", &_blur_size.x)) {
                 _blur_size = glm::clamp(_blur_size, 1, 150);
                 modified();
             }
-            ImGui::PopItemWidth();
 
             const auto texture_size =
                     ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));

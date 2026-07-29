@@ -36,12 +36,14 @@ namespace imagegraph::nodes {
             constexpr float input_width = total_width - label_width;
 
             ImGui::PushItemWidth(input_width);
+            ImGui::AlignTextToFramePadding();
             ImGui::TextUnformatted("Focus");
             ImGui::SameLine(label_width);
             if (ImGui::DragFloat("##focus", &_focus, 0.01, 0.0f, 0.0f, "%.2f")) {
                 _focus = std::clamp(_focus, 0.0f, 1.0f);
                 modified();
             }
+            ImGui::AlignTextToFramePadding();
             ImGui::TextUnformatted("Radius");
             ImGui::SameLine(label_width);
             if (ImGui::DragFloat("##radius", &_radius, 0.01, 0.0f, 0.0f, "%.2f")) {

@@ -34,9 +34,11 @@ namespace imagegraph::nodes {
                 constexpr float label_width = 35.0f;
                 constexpr float input_width = total_width - label_width;
 
-                ImGui::PushItemWidth(input_width);
+                ImGui::AlignTextToFramePadding();
                 ImGui::TextUnformatted("Size");
+
                 ImGui::SameLine(label_width);
+                ImGui::SetNextItemWidth(input_width);
                 if (ImGui::InputInt2("##output_size", _output_size.data())) {
                     _output_size[0] = std::clamp((_output_size[0] / 14) * 14, 14, 2072);
                     _output_size[1] = std::clamp((_output_size[1] / 14) * 14, 14, 2072);
@@ -44,7 +46,6 @@ namespace imagegraph::nodes {
                 if (ImGui::IsItemDeactivatedAfterEdit()) {
                     modified();
                 }
-                ImGui::PopItemWidth();
 
                 widgets::indeterminate_progress_bar(_processing);
 
