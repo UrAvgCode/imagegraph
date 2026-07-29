@@ -7,9 +7,54 @@
 #include <cstdint>
 
 namespace {
-    constexpr int tensor_width = 1024;
-    constexpr int tensor_height = 1024;
+    constexpr int input_width = 1024;
+    constexpr int input_height = 1024;
     const auto memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
+
+    void sort_masks(std::array<imagegraph::image::Image, 3>& masks, std::array<float, 3>& iou_predictions) {
+        if (iou_predictions[0] < iou_predictions[1]) {
+            std::swap(iou_predictions[0], iou_predictions[1]);
+            std::swap(masks[0], masks[1]);
+        }
+        if (iou_predictions[1] < iou_predictions[2]) {
+            std::swap(iou_predictions[1], iou_predictions[2]);
+            std::swap(masks[1], masks[2]);
+        }
+        if (iou_predictions[0] < iou_predictions[1]) {
+            std::swap(iou_predictions[0], iou_predictions[1]);
+            std::swap(masks[0], masks[1]);
+        }
+    }
+
+    std::array<imagegraph::image::Image, 3> decoder_outputs_to_masks(const std::vector<Ort::Value>& outputs) {
+        assert(outputs.size() == 2);
+        const auto& masks_output = outputs[0];
+        const auto& iou_output = outputs[1];
+
+        const auto mask_shape = masks_output.GetTensorTypeAndShapeInfo().GetShape();
+        const auto iou_shape = iou_output.GetTensorTypeAndShapeInfo().GetShape();
+        assert(mask_shape.size() == 4 && iou_shape.size() == 2);
+
+        const auto mask_count = static_cast<std::size_t>(mask_shape[1]);
+        assert(mask_count == 3);
+
+        const auto mask_height = static_cast<std::size_t>(mask_shape[2]);
+        const auto mask_width = static_cast<std::size_t>(mask_shape[3]);
+
+        const auto mask_data = masks_output.GetTensorData<float>();
+        const auto mask_stride = mask_width * mask_height;
+
+        auto masks = std::array<imagegraph::image::Image, 3>();
+        for (std::size_t i = 0; i < masks.size(); ++i) {
+            masks[i] = {static_cast<int>(mask_width), static_cast<int>(mask_height), 1, mask_data + i * mask_stride};
+        }
+
+        const auto iou_data = iou_output.GetTensorData<float>();
+        auto iou_predictions = std::array{iou_data[0], iou_data[1], iou_data[2]};
+        sort_masks(masks, iou_predictions);
+
+        return masks;
+    }
 } // namespace
 
 namespace imagegraph::inference {
@@ -28,10 +73,10 @@ namespace imagegraph::inference {
 
     DecoderInputs SegmentModel::encode(image::Image input_image) {
         try {
-            input_image.resize(tensor_width, tensor_height);
+            input_image.resize(input_width, input_height);
             auto tensor_values = image::image_to_tensor(input_image);
 
-            constexpr auto input_shape = std::array<std::int64_t, 4>{1, 3, tensor_height, tensor_width};
+            constexpr auto input_shape = std::array<std::int64_t, 4>{1, 3, input_height, input_width};
             const auto encoder_input_tensor = Ort::Value::CreateTensor<float>(
                     memory_info, tensor_values.data(), tensor_values.size(), input_shape.data(), input_shape.size());
 
@@ -49,15 +94,15 @@ namespace imagegraph::inference {
         }
     }
 
-    image::Image SegmentModel::decode(DecoderInputs& inputs, const std::vector<PointPrompt>& prompts) {
+    std::array<image::Image, 3> SegmentModel::decode(DecoderInputs& inputs, const std::vector<PointPrompt>& prompts) {
         auto point_coords = std::vector<float>(prompts.size() * 2);
         auto point_labels = std::vector<float>(prompts.size());
 
         for (std::size_t i = 0; i < prompts.size(); ++i) {
             const auto& [position, label] = prompts[i];
-            point_coords[i * 2] = position[0] * tensor_width;
-            point_coords[i * 2 + 1] = position[1] * tensor_height;
-            point_labels[i] = label == PointLabel::Foreground ? 1.0f : 0.0f;
+            point_coords[i * 2] = position[0] * input_width;
+            point_coords[i * 2 + 1] = position[1] * input_height;
+            point_labels[i] = label == PointType::Positive ? 1.0f : 0.0f;
         }
 
         const auto prompts_size = static_cast<std::int64_t>(prompts.size());
@@ -86,17 +131,10 @@ namespace imagegraph::inference {
         inputs.has_mask_input = std::move(has_mask_tensor);
 
         const auto run_options = Ort::RunOptions();
-        auto outputs = _decoder_session.Run(get_run_options(), _decoder_input_names.data(), inputs.data(),
-                                            _decoder_input_names.size(), _decoder_output_names.data(),
-                                            _decoder_output_names.size());
+        const auto outputs = _decoder_session.Run(get_run_options(), _decoder_input_names.data(), inputs.data(),
+                                                  _decoder_input_names.size(), _decoder_output_names.data(),
+                                                  _decoder_output_names.size());
 
-        const auto mask_ptr = outputs[0].GetTensorMutableData<float>();
-        const auto mask_info = outputs[0].GetTensorTypeAndShapeInfo();
-        const auto mask_dimensions = mask_info.GetShape();
-
-        const auto mask_width = static_cast<int>(mask_dimensions[3]);
-        const auto mask_height = static_cast<int>(mask_dimensions[2]);
-
-        return {mask_width, mask_height, 1, mask_ptr};
+        return decoder_outputs_to_masks(outputs);
     }
 } // namespace imagegraph::inference

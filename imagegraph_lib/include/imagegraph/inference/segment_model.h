@@ -30,7 +30,7 @@ namespace imagegraph::inference {
         explicit SegmentModel();
 
         DecoderInputs encode(image::Image);
-        image::Image decode(DecoderInputs&, const std::vector<PointPrompt>&);
+        std::array<image::Image, 3> decode(DecoderInputs&, const std::vector<PointPrompt>&);
 
     private:
         Ort::Session _encoder_session;

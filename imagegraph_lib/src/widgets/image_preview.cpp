@@ -144,7 +144,7 @@ namespace imagegraph::widgets {
                 point.y = ImClamp(point.y, 0.0f, texture_size.y);
 
                 prompts.push_back(
-                        {{point.x / texture_size.x, point.y / texture_size.y}, inference::PointLabel::Foreground});
+                        {{point.x / texture_size.x, point.y / texture_size.y}, inference::PointType::Positive});
                 prompts_changed = true;
             } else if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
                 auto point = (mouse_position - image_min) / scale;
@@ -152,7 +152,7 @@ namespace imagegraph::widgets {
                 point.y = ImClamp(point.y, 0.0f, texture_size.y);
 
                 prompts.push_back(
-                        {{point.x / texture_size.x, point.y / texture_size.y}, inference::PointLabel::Background});
+                        {{point.x / texture_size.x, point.y / texture_size.y}, inference::PointType::Negative});
                 prompts_changed = true;
             }
         }
@@ -169,7 +169,7 @@ namespace imagegraph::widgets {
             constexpr auto negative_color = IM_COL32(255, 80, 80, 255);
             constexpr auto outline_color = IM_COL32(20, 20, 20, 220);
 
-            const auto fill_color = label == inference::PointLabel::Foreground ? positive_color : negative_color;
+            const auto fill_color = label == inference::PointType::Positive ? positive_color : negative_color;
             draw_list->AddCircleFilled(screen_position, outline_radius, outline_color, 24);
             draw_list->AddCircleFilled(screen_position, point_radius, fill_color, 20);
         }

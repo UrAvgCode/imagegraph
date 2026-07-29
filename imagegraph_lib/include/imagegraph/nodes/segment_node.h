@@ -23,8 +23,13 @@ namespace imagegraph::nodes {
         std::vector<inference::PointPrompt> _prompts;
         bool _prompts_modified;
 
+        int _mask_index;
+        bool _mask_index_modified;
+
         float _threshold;
         bool _threshold_modified;
+
+        std::array<image::Image, 3> _masks;
 
         compute::Mask _mask;
         compute::Mask _logits_mask;

@@ -3,13 +3,13 @@
 #include <array>
 
 namespace imagegraph::inference {
-    enum class PointLabel {
-        Foreground,
-        Background,
+    enum class PointType {
+        Positive,
+        Negative,
     };
 
     struct PointPrompt {
         std::array<float, 2> position;
-        PointLabel label;
+        PointType type;
     };
 } // namespace imagegraph::inference
