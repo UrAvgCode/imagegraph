@@ -50,13 +50,13 @@ namespace imagegraph::benchmark {
 
         const auto average_encoder = total_encoder / iterations;
 
-        auto output = image::Image();
+        auto outputs = std::array<image::Image, 3>();
 
         std::uint64_t total_decoder = 0;
         for (std::size_t i = 0; i < iterations; ++i) {
             const auto start = std::chrono::steady_clock::now();
 
-            output = inference::get_segment_model()->decode(decoder_inputs, {{0.5, 0.5}, {}});
+            outputs = inference::get_segment_model()->decode(decoder_inputs, {{0.5, 0.5}, {}});
 
             const auto end = std::chrono::steady_clock::now();
             const auto elapsed = std::chrono::duration<std::uint64_t, std::nano>(end - start).count();
@@ -67,9 +67,9 @@ namespace imagegraph::benchmark {
         const auto average_decoder = total_decoder / iterations;
 
         const auto subfolder = device == inference::Device::Cpu ? "cpu" : "gpu";
-        const auto path = _output_root / subfolder / std::format("{}x{}.png", output.width(), output.height());
+        const auto path = _output_root / subfolder / std::format("{}x{}.png", outputs[0].width(), outputs[0].height());
         std::filesystem::create_directories(path.parent_path());
-        imagegraph::image::save_to_file(output, path);
+        imagegraph::image::save_to_file(outputs[0], path);
 
         inference::destroy_environment();
 
