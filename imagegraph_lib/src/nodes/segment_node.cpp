@@ -192,13 +192,17 @@ namespace imagegraph::nodes {
                     {{"position", position}, {"type", type == inference::PointType::Positive ? "+" : "-"}});
         }
 
-        return {{"prompts", prompts_json}, {"mask_index", _mask_index}};
+        return {{"prompts", prompts_json}, {"mask_index", _mask_index}, {"threshold", _threshold}};
     }
 
     void SegmentNode::deserialize(const nlohmann::json& json) {
         if (json.contains("mask_index") && json["mask_index"].is_number()) {
             _mask_index = json["mask_index"].get<int>();
             _mask_index = std::clamp(_mask_index, 0, 2);
+        }
+
+        if (json.contains("threshold") && json["threshold"].is_number()) {
+            _threshold = json["threshold"].get<float>();
         }
 
         if (json.contains("prompts") && json["prompts"].is_array()) {
