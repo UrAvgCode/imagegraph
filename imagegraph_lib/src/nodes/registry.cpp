@@ -4,6 +4,7 @@
 #include <imagegraph/nodes/bokeh_node.h>
 #include <imagegraph/nodes/brightness_contrast_node.h>
 #include <imagegraph/nodes/color_intensity_node.h>
+#include <imagegraph/nodes/color_key_node.h>
 #include <imagegraph/nodes/depth_node.h>
 #include <imagegraph/nodes/gaussian_blur_node.h>
 #include <imagegraph/nodes/input_node.h>
@@ -44,6 +45,7 @@ namespace imagegraph::nodes {
 
         register_node<DepthNode>("depth", "Depth", "Masks");
         register_node<SegmentNode>("segment", "Segment", "Masks");
+        register_node<ColorKeyNode>("color_key", "Color Key", "Masks");
         register_node<MaskInvertNode>("mask_invert", "Invert Mask", "Masks");
         register_node<MaskGrowShrinkNode>("mask_grow_shrink", "Grow/Shrink Mask", "Masks");
         register_node<MaskGaussianBlurNode>("mask_gaussian_blur", "Mask Gaussian Blur", "Masks");
