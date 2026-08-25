@@ -1,5 +1,6 @@
 #include <imagegraph/windows/node_editor.h>
 
+#include <fstream>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -10,9 +11,34 @@ namespace imagegraph {
         auto config = ax::NodeEditor::Config();
         config.SettingsFile = "node_editor.json";
         _context = ax::NodeEditor::CreateEditor(&config);
+
+        if (auto file = std::ifstream("nodes.json")) {
+            try {
+                auto json = nlohmann::json();
+                file >> json;
+                deserialize(json);
+            } catch (const std::exception& exception) {
+                std::fprintf(stderr, "failed to load nodes: %s\n", exception.what());
+            }
+        }
     }
 
-    NodeEditor::~NodeEditor() { ax::NodeEditor::DestroyEditor(_context); }
+    NodeEditor::~NodeEditor() {
+        try {
+            const auto json = serialize();
+
+            auto file = std::ofstream("nodes.json");
+            if (!file) {
+                throw std::runtime_error("failed to open nodes.json");
+            }
+
+            file << json.dump(4);
+        } catch (const std::exception& exception) {
+            std::fprintf(stderr, "failed to save nodes: %s\n", exception.what());
+        }
+
+        ax::NodeEditor::DestroyEditor(_context);
+    }
 
     void NodeEditor::draw() {
         ax::NodeEditor::SetCurrentEditor(_context);
