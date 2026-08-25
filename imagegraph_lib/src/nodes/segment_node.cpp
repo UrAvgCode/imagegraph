@@ -83,7 +83,7 @@ namespace imagegraph::nodes {
                     _threshold_modified = true;
                 }
 
-                auto mask_label = std::array<char, 16>{};
+                auto mask_label = std::array<char, 32>{};
                 std::snprintf(mask_label.data(), mask_label.size(), "Mask %d / 3", _mask_index + 1);
 
                 const auto row_origin = ImGui::GetCursorPos();
