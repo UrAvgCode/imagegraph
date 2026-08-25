@@ -30,15 +30,14 @@ vec3 apply_vibrance(vec3 rgb, float vibrance) {
 }
 
 void main() {
-    ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(u_input);
-
-    if (texel.x >= size.x || texel.y >= size.y) {
+    ivec2 coordinate = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 input_size = imageSize(u_input);
+    if (any(greaterThanEqual(coordinate, input_size))) {
         return;
     }
 
-    vec4 color = imageLoad(u_input, texel);
+    vec4 color = imageLoad(u_input, coordinate);
     color.rgb = apply_saturation(color.rgb, u_saturation);
     color.rgb = apply_vibrance(color.rgb, u_vibrance);
-    imageStore(u_output, texel, color);
+    imageStore(u_output, coordinate, color);
 }

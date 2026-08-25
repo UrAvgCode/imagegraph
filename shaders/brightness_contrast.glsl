@@ -9,14 +9,13 @@ layout (location = 0) uniform float u_brightness;
 layout (location = 1) uniform float u_contrast;
 
 void main() {
-    ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(u_input);
-
-    if (texel.x >= size.x || texel.y >= size.y) {
+    ivec2 coordinate = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 input_size = imageSize(u_input);
+    if (any(greaterThanEqual(coordinate, input_size))) {
         return;
     }
 
-    vec4 color = imageLoad(u_input, texel);
+    vec4 color = imageLoad(u_input, coordinate);
     color.rgb = (color.rgb - 0.5) * u_contrast + 0.5 + u_brightness;
-    imageStore(u_output, texel, color);
+    imageStore(u_output, coordinate, color);
 }

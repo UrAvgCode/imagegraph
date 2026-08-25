@@ -8,15 +8,13 @@ layout (binding = 1, r16f) uniform writeonly image2D u_output;
 layout (location = 0) uniform float u_threshold;
 
 void main() {
-    ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(u_output);
-
-    if (texel.x >= size.x || texel.y >= size.y) {
+    ivec2 coordinate = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 output_size = imageSize(u_output);
+    if (any(greaterThanEqual(coordinate, output_size))) {
         return;
     }
 
-    vec2 uv = (vec2(texel) + 0.5) / vec2(size);
+    vec2 uv = (vec2(coordinate) + 0.5) / vec2(output_size);
     float value = step(u_threshold, texture(u_input, uv).r);
-    vec4 color = vec4(value, value, value, 1.0);
-    imageStore(u_output, texel, color);
+    imageStore(u_output, coordinate, vec4(value));
 }

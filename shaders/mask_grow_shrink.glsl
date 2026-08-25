@@ -8,17 +8,16 @@ layout (binding = 1, r16f) uniform writeonly image2D u_output;
 layout (location = 0) uniform int u_amount;
 
 void main() {
-    ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(u_output);
-
-    if (texel.x >= size.x || texel.y >= size.y) {
+    ivec2 coordinate = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 input_size = imageSize(u_input);
+    if (any(greaterThanEqual(coordinate, input_size))) {
         return;
     }
 
     const int radius = abs(u_amount);
     if (radius == 0) {
-        float value = imageLoad(u_input, texel).r;
-        imageStore(u_output, texel, vec4(value));
+        float value = imageLoad(u_input, coordinate).r;
+        imageStore(u_output, coordinate, vec4(value));
         return;
     }
 
@@ -32,8 +31,8 @@ void main() {
                 continue;
             }
 
-            ivec2 sample_pos = texel + ivec2(x, y);
-            if (sample_pos.x < 0 || sample_pos.y < 0 || sample_pos.x >= size.x || sample_pos.y >= size.y) {
+            ivec2 sample_pos = coordinate + ivec2(x, y);
+            if (sample_pos.x < 0 || sample_pos.y < 0 || sample_pos.x >= input_size.x || sample_pos.y >= input_size.y) {
                 continue;
             }
 
@@ -42,5 +41,5 @@ void main() {
         }
     }
 
-    imageStore(u_output, texel, vec4(result));
+    imageStore(u_output, coordinate, vec4(result));
 }

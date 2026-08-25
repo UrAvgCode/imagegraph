@@ -10,14 +10,13 @@ layout (location = 0) uniform float u_focus;
 layout (location = 1) uniform float u_radius;
 
 void main() {
-    ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(u_input);
-
-    if (texel.x >= size.x || texel.y >= size.y) {
+    ivec2 coordinate = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 input_size = imageSize(u_input);
+    if (any(greaterThanEqual(coordinate, input_size))) {
         return;
     }
 
-    vec2 uv = (vec2(texel) + 0.5) / vec2(size);
+    vec2 uv = (vec2(coordinate) + 0.5) / vec2(input_size);
     float depth = texture(u_depth, uv).r;
 
     float blur_factor = abs(depth - u_focus);
@@ -26,23 +25,23 @@ void main() {
     vec4 color = vec4(0.0);
     float weight_sum = 0.0;
 
-    for (int y = -radius; y <= radius; y++) {
-        for (int x = -radius; x <= radius; x++) {
+    int radius_squared = radius * radius;
+    for (int y = -radius; y <= radius; ++y) {
+        for (int x = -radius; x <= radius; ++x) {
+            int distance_squared = x * x + y * y;
 
-            ivec2 offset = ivec2(x, y);
-            float dist = length(vec2(x, y));
+            if (distance_squared > radius_squared) {
+                continue;
+            }
 
-            if (dist > float(radius)) continue;
+            ivec2 sample_coordinate = clamp(coordinate + ivec2(x, y), ivec2(0), input_size - 1);
+            float sample_distance = sqrt(float(distance_squared));
+            float weight = 1.0 - (sample_distance / float(radius + 1));
 
-            ivec2 coord = clamp(texel + ivec2(x, y), ivec2(0), size - 1);
-            vec4 sample_color = imageLoad(u_input, coord);
-
-            float weight = 1.0 - (dist / float(radius + 1));
-
-            color += sample_color * weight;
+            color += imageLoad(u_input, sample_coordinate) * weight;
             weight_sum += weight;
         }
     }
 
-    imageStore(u_output, texel, color / weight_sum);
+    imageStore(u_output, coordinate, color / weight_sum);
 }

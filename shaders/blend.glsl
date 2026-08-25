@@ -10,19 +10,18 @@ layout (binding = 3, rgba16f) uniform writeonly image2D u_output;
 layout (location = 0) uniform bool u_use_mask;
 
 void main() {
-    ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(u_base);
-
-    if (texel.x >= size.x || texel.y >= size.y) {
+    ivec2 coordinate = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 base_size = imageSize(u_base);
+    if (any(greaterThanEqual(coordinate, base_size))) {
         return;
     }
 
-    vec4 base = imageLoad(u_base, texel);
-    vec4 blend = imageLoad(u_blend, texel);
+    vec4 base = imageLoad(u_base, coordinate);
+    vec4 blend = imageLoad(u_blend, coordinate);
 
-    vec2 uv = (vec2(texel) + 0.5) / vec2(size);
+    vec2 uv = (vec2(coordinate) + 0.5) / vec2(base_size);
     float mask = u_use_mask ? texture(u_mask, uv).r : 0.5;
 
     vec4 color = mix(base, blend, mask);
-    imageStore(u_output, texel, color);
+    imageStore(u_output, coordinate, color);
 }

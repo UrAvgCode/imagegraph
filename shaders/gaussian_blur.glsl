@@ -14,10 +14,9 @@ float gaussian(float x, float sigma) {
 }
 
 void main() {
-    ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 size = imageSize(u_input);
-
-    if (texel.x >= size.x || texel.y >= size.y) {
+    ivec2 coordinate = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 input_size = imageSize(u_input);
+    if (any(greaterThanEqual(coordinate, input_size))) {
         return;
     }
 
@@ -29,7 +28,7 @@ void main() {
 
     for (int i = -radius; i <= radius; i++) {
         ivec2 offset = u_vertical_pass ? ivec2(0, i) : ivec2(i, 0);
-        ivec2 coord = clamp(texel + offset, ivec2(0), size - 1);
+        ivec2 coord = clamp(coordinate + offset, ivec2(0), input_size - 1);
 
         float weight = gaussian(float(i), sigma);
         vec4 sample_color = imageLoad(u_input, coord);
@@ -38,5 +37,5 @@ void main() {
         weight_sum += weight;
     }
 
-    imageStore(u_output, texel, color / weight_sum);
+    imageStore(u_output, coordinate, color / weight_sum);
 }
