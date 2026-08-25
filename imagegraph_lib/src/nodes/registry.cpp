@@ -13,6 +13,7 @@
 #include <imagegraph/nodes/mask_invert_node.h>
 #include <imagegraph/nodes/output_node.h>
 #include <imagegraph/nodes/segment_node.h>
+#include <imagegraph/nodes/white_balance_node.h>
 
 namespace imagegraph::nodes {
     template<typename NodeType>
@@ -38,6 +39,7 @@ namespace imagegraph::nodes {
 
         register_node<BrightnessContrastNode>("brightness_contrast", "Brightness/Contrast", "Color");
         register_node<ColorIntensityNode>("color_intensity", "Color Intensity", "Color");
+        register_node<WhiteBalanceNode>("white_balance", "White Balance", "Color");
 
         register_node<GaussianBlurNode>("gaussian_blur", "Gaussian Blur", "Effects");
         register_node<BokehNode>("bokeh", "Bokeh", "Effects");
