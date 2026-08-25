@@ -7,9 +7,10 @@
 #include <imagegraph/nodes/depth_node.h>
 #include <imagegraph/nodes/gaussian_blur_node.h>
 #include <imagegraph/nodes/input_node.h>
+#include <imagegraph/nodes/mask_grow_shrink_node.h>
+#include <imagegraph/nodes/mask_invert_node.h>
 #include <imagegraph/nodes/output_node.h>
 #include <imagegraph/nodes/segment_node.h>
-#include <imagegraph/nodes/mask_invert_node.h>
 
 namespace imagegraph::nodes {
     template<typename NodeType>
@@ -43,6 +44,7 @@ namespace imagegraph::nodes {
         register_node<DepthNode>("depth", "Depth", "Masks");
         register_node<SegmentNode>("segment", "Segment", "Masks");
         register_node<MaskInvertNode>("mask_invert", "Invert Mask", "Masks");
+        register_node<MaskGrowShrinkNode>("mask_grow_shrink", "Grow/Shrink Mask", "Masks");
     }
 
     std::unique_ptr<graph::Node> Registry::create(const char* type) const { return _entries.at(type).factory(); }
