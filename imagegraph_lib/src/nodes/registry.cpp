@@ -1,19 +1,23 @@
 #include <imagegraph/nodes/registry.h>
 
-#include <imagegraph/nodes/blend_node.h>
-#include <imagegraph/nodes/bokeh_node.h>
+#include <imagegraph/nodes/input_node.h>
+#include <imagegraph/nodes/output_node.h>
+
 #include <imagegraph/nodes/brightness_contrast_node.h>
 #include <imagegraph/nodes/color_intensity_node.h>
+#include <imagegraph/nodes/white_balance_node.h>
+
+#include <imagegraph/nodes/blend_node.h>
+#include <imagegraph/nodes/bokeh_node.h>
+#include <imagegraph/nodes/gaussian_blur_node.h>
+#include <imagegraph/nodes/median_node.h>
+
 #include <imagegraph/nodes/color_key_node.h>
 #include <imagegraph/nodes/depth_node.h>
-#include <imagegraph/nodes/gaussian_blur_node.h>
-#include <imagegraph/nodes/input_node.h>
 #include <imagegraph/nodes/mask_gaussian_blur_node.h>
 #include <imagegraph/nodes/mask_grow_shrink_node.h>
 #include <imagegraph/nodes/mask_invert_node.h>
-#include <imagegraph/nodes/output_node.h>
 #include <imagegraph/nodes/segment_node.h>
-#include <imagegraph/nodes/white_balance_node.h>
 
 namespace imagegraph::nodes {
     template<typename NodeType>
@@ -42,6 +46,7 @@ namespace imagegraph::nodes {
         register_node<WhiteBalanceNode>("white_balance", "White Balance", "Color");
 
         register_node<GaussianBlurNode>("gaussian_blur", "Gaussian Blur", "Effects");
+        register_node<MedianNode>("median", "Median", "Effects");
         register_node<BokehNode>("bokeh", "Bokeh", "Effects");
         register_node<BlendNode>("blend", "Blend", "Effects");
 
