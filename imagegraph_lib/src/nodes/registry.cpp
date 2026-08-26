@@ -5,6 +5,7 @@
 
 #include <imagegraph/nodes/brightness_contrast_node.h>
 #include <imagegraph/nodes/color_intensity_node.h>
+#include <imagegraph/nodes/histogram_equalization_node.h>
 #include <imagegraph/nodes/white_balance_node.h>
 
 #include <imagegraph/nodes/blend_node.h>
@@ -44,6 +45,7 @@ namespace imagegraph::nodes {
         register_node<BrightnessContrastNode>("brightness_contrast", "Brightness/Contrast", "Color");
         register_node<ColorIntensityNode>("color_intensity", "Color Intensity", "Color");
         register_node<WhiteBalanceNode>("white_balance", "White Balance", "Color");
+        register_node<HistogramEqualizationNode>("histogram_equalization", "Histogram Equalization", "Color");
 
         register_node<GaussianBlurNode>("gaussian_blur", "Gaussian Blur", "Effects");
         register_node<MedianNode>("median", "Median", "Effects");

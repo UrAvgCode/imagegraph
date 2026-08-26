@@ -78,7 +78,8 @@ namespace imagegraph::compute {
 
         glUseProgram(_id);
         glDispatchCompute(groups_x, groups_y, 1);
-        glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT |
+                        GL_SHADER_STORAGE_BARRIER_BIT);
     }
 
     GLuint ComputeProgram::id() const { return _id; }
