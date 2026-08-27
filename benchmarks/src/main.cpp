@@ -5,6 +5,7 @@
 #include <benchmark/benchmarks/blur_benchmark.h>
 #include <benchmark/benchmarks/depth_model_benchmark.h>
 #include <benchmark/benchmarks/grayscale_benchmark.h>
+#include <benchmark/benchmarks/histogram_equalization_benchmark.h>
 #include <benchmark/benchmarks/segment_model_benchmark.h>
 
 #include <cstdio>
@@ -25,6 +26,10 @@ int main() {
         return 1;
     }
 
+    {
+        auto histogram_benchmark = imagegraph::benchmark::HistogramEqualizationBenchmark();
+        histogram_benchmark.run();
+    }
     {
         auto segment_benchmark = imagegraph::benchmark::SegmentModelBenchmark();
         segment_benchmark.run();

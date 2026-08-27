@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.ticker import FuncFormatter
@@ -6,8 +8,19 @@ from matplotlib.ticker import FuncFormatter
 # ChatGPT (GPT-5.5):
 # Unterstützung bei der Erstellung und Anpassung der Diagramme mit Matplotlib.
 
+def load_csv(csv):
+    path = Path(csv)
+
+    if not path.is_file() or path.stat().st_size == 0:
+        return None
+
+    return pd.read_csv(path)
+
+
 def create_plot(csv, title):
-    df = pd.read_csv(csv)
+    df = load_csv(csv)
+    if df is None:
+        return
 
     plt.figure(figsize=(10, 6))
 
@@ -36,7 +49,9 @@ def create_plot(csv, title):
 
 
 def create_model_plot(csv, title):
-    df = pd.read_csv(csv)
+    df = load_csv(csv)
+    if df is None:
+        return
 
     plt.figure(figsize=(10, 6))
 
@@ -64,7 +79,10 @@ def create_model_plot(csv, title):
 
 
 def create_bar_chart(csv, title):
-    df = pd.read_csv(csv)
+    df = load_csv(csv)
+    if df is None:
+        return
+
     row = df.iloc[0]
 
     gpu_encoder = row["gpu_encoder"] / 1e6
@@ -104,5 +122,6 @@ def create_bar_chart(csv, title):
 if __name__ == '__main__':
     create_bar_chart("segment_model/results.csv", "Segment Anything V2")
     create_model_plot("depth_model/results.csv", "Depth Anything V2")
+    create_plot("histogram_equalization/results.csv", "Histogram Equalization")
     create_plot("grayscale/results.csv", "Grayscale")
     create_plot("blur/results.csv", "Blur")
