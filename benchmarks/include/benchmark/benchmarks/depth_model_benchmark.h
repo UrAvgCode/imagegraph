@@ -2,6 +2,7 @@
 
 #include <benchmark/helper/input_node.h>
 
+#include <imagegraph/image/image.h>
 #include <imagegraph/inference/environment.h>
 
 namespace imagegraph::benchmark {
@@ -12,9 +13,9 @@ namespace imagegraph::benchmark {
         void run();
 
     private:
-        std::uint64_t run_model(inference::Device);
+        std::uint64_t run_model(inference::Device) const;
 
         std::filesystem::path _output_root;
-        InputNode _input_node;
+        image::Image _image;
     };
 } // namespace imagegraph::benchmark

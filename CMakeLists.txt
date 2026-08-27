@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(ENABLE_WARNINGS ON)
 option(BUILD_SHARED_LIBS OFF)
+option(BUILD_BENCHMARKS OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(onnxruntime)
@@ -17,4 +18,6 @@ add_subdirectory(external)
 add_subdirectory(imagegraph_lib)
 add_subdirectory(imagegraph)
 
-add_subdirectory(benchmarks)
+if (BUILD_BENCHMARKS)
+    add_subdirectory(benchmarks)
+endif ()

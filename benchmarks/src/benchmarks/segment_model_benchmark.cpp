@@ -1,5 +1,7 @@
 #include <benchmark/benchmarks/segment_model_benchmark.h>
 
+#include <benchmark/data/peppers.h>
+
 #include <imagegraph/image/io.h>
 #include <imagegraph/inference/environment.h>
 #include <imagegraph/inference/segment_model.h>
@@ -23,17 +25,19 @@ namespace imagegraph::benchmark {
 
         std::printf("running segment model benchmark\n");
 
-        _input_node.set_size(1024, 1024);
+        _image = image::load_from_memory(peppers_jpg.data(), peppers_jpg.size());
+        _image.resize(1024, 1024);
+
         const auto gpu_result = run_model(inference::Device::Cuda);
         const auto cpu_result = run_model(inference::Device::Cpu);
 
         file << gpu_result[0] << ',' << gpu_result[1] << ',' << cpu_result[0] << ',' << cpu_result[1] << '\n';
     }
 
-    std::array<std::uint64_t, 2> SegmentModelBenchmark::run_model(const inference::Device device) {
+    std::array<std::uint64_t, 2> SegmentModelBenchmark::run_model(const inference::Device device) const {
         inference::init_environment(device);
 
-        const auto image = _input_node.image();
+        const auto image = _image;
         auto decoder_inputs = inference::DecoderInputs();
 
         std::uint64_t total_encoder = 0;

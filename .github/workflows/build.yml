@@ -31,7 +31,7 @@ jobs:
             python3-jinja2
 
       - name: configure cmake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DDOWNLOAD_MODELS=OFF
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_BENCHMARKS=ON -DDOWNLOAD_MODELS=OFF
 
       - name: build
         run: cmake --build ${{github.workspace}}/build -j

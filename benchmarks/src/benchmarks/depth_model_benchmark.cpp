@@ -1,5 +1,7 @@
 #include <benchmark/benchmarks/depth_model_benchmark.h>
 
+#include <benchmark/data/peppers.h>
+
 #include <imagegraph/image/io.h>
 #include <imagegraph/inference/depth_model.h>
 #include <imagegraph/inference/environment.h>
@@ -24,7 +26,9 @@ namespace imagegraph::benchmark {
         std::printf("running depth model benchmark\n");
         for (int size = 56; size <= 1064; size += 56) {
             std::printf("benchmarking %dx%d...\n", size, size);
-            _input_node.set_size(size, size);
+
+            _image = image::load_from_memory(peppers_jpg.data(), peppers_jpg.size());
+            _image.resize(size, size);
 
             const auto gpu_result = run_model(inference::Device::Cuda);
             const auto cpu_result = run_model(inference::Device::Cpu);
@@ -33,10 +37,10 @@ namespace imagegraph::benchmark {
         }
     }
 
-    std::uint64_t DepthModelBenchmark::run_model(const inference::Device device) {
+    std::uint64_t DepthModelBenchmark::run_model(const inference::Device device) const {
         inference::init_environment(device);
 
-        const auto image = _input_node.image();
+        const auto image = _image;
         const auto size = std::array{image.width(), image.height()};
 
         auto output = image::Image();
