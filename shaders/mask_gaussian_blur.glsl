@@ -9,8 +9,7 @@ layout (location = 0) uniform ivec2 u_blur_size;
 layout (location = 1) uniform bool u_vertical_pass;
 
 float gaussian(float x, float sigma) {
-    float s = sigma * sigma;
-    return exp(-0.5 * (x * x) / s);
+    return exp(-(x * x) / (2 * sigma * sigma));
 }
 
 void main() {
@@ -21,7 +20,12 @@ void main() {
     }
 
     int radius = u_vertical_pass ? u_blur_size.y : u_blur_size.x;
-    float sigma = float(radius) / 3.0;
+    if (radius == 0) {
+        imageStore(u_output, coordinate, imageLoad(u_input, coordinate));
+        return;
+    }
+
+    const float sigma = float(radius) / 3.0;
 
     float value = 0.0;
     float weight_sum = 0.0;

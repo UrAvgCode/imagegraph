@@ -39,8 +39,7 @@ namespace imagegraph::nodes {
 
             ImGui::SameLine(label_width);
             ImGui::SetNextItemWidth(input_width);
-            if (ImGui::DragInt2("##size", &_blur_size.x)) {
-                _blur_size = glm::clamp(_blur_size, 1, 150);
+            if (ImGui::DragInt2("##size", &_blur_size.x, 0.2, 0, 150)) {
                 modified();
             }
 
