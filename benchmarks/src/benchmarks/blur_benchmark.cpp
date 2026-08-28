@@ -3,6 +3,20 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <algorithm>
+#include <vector>
+
+namespace {
+    std::vector<float> gaussian_kernel(const std::size_t radius) {
+        const float sigma = static_cast<float>(radius) / 3.0f;
+
+        auto kernel = std::vector<float>(radius + 1);
+        for (std::size_t i = 0; i < kernel.size(); ++i) {
+            kernel[i] = std::exp(-static_cast<float>(i * i) / (2.0f * sigma * sigma));
+        }
+
+        return kernel;
+    }
+} // namespace
 
 namespace imagegraph::benchmark {
     constexpr auto radius = 100;
@@ -19,11 +33,7 @@ namespace imagegraph::benchmark {
         const int width = input.width();
         const int height = input.height();
 
-        auto gaussian = [](const int x) {
-            constexpr float sigma = static_cast<float>(radius) / 3.0f;
-            return std::exp(-(x * x) / (sigma * sigma));
-        };
-
+        const auto horizontal_kernel = gaussian_kernel(radius);
         auto temp_image = image::Image(width, height, input.channels());
 
         for (int y = 0; y < height; ++y) {
@@ -35,7 +45,7 @@ namespace imagegraph::benchmark {
                     const int x_coord = std::clamp(x + j, 0, width - 1);
                     const int index = (y * width + x_coord) * 4;
 
-                    const float weight = gaussian(j);
+                    const float weight = horizontal_kernel[std::abs(j)];
                     color += glm::make_vec4(input.data() + index) * weight;
                     weight_sum += weight;
                 }
@@ -50,6 +60,8 @@ namespace imagegraph::benchmark {
             }
         }
 
+        const auto vertical_kernel = gaussian_kernel(radius);
+
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 auto color = glm::vec4(0.0f);
@@ -59,7 +71,7 @@ namespace imagegraph::benchmark {
                     const int y_coord = std::clamp(y + j, 0, height - 1);
                     const int index = (y_coord * width + x) * 4;
 
-                    const float weight = gaussian(j);
+                    const float weight = vertical_kernel[std::abs(j)];
                     color += glm::make_vec4(temp_image.data() + index) * weight;
                     weight_sum += weight;
                 }
@@ -79,11 +91,7 @@ namespace imagegraph::benchmark {
         const int width = input.width();
         const int height = input.height();
 
-        auto gaussian = [](const int x) {
-            constexpr float sigma = static_cast<float>(radius) / 3.0f;
-            return std::exp(-(x * x) / (sigma * sigma));
-        };
-
+        const auto horizontal_kernel = gaussian_kernel(radius);
         auto temp_image = image::Image(width, height, input.channels());
 
 #pragma omp parallel for schedule(static)
@@ -96,7 +104,7 @@ namespace imagegraph::benchmark {
                     const int x_coord = std::clamp(x + j, 0, width - 1);
                     const int index = (y * width + x_coord) * 4;
 
-                    const float weight = gaussian(j);
+                    const float weight = horizontal_kernel[std::abs(j)];
                     color += glm::make_vec4(input.data() + index) * weight;
                     weight_sum += weight;
                 }
@@ -111,6 +119,8 @@ namespace imagegraph::benchmark {
             }
         }
 
+        const auto vertical_kernel = gaussian_kernel(radius);
+
 #pragma omp parallel for schedule(static)
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
@@ -121,7 +131,7 @@ namespace imagegraph::benchmark {
                     const int y_coord = std::clamp(y + j, 0, height - 1);
                     const int index = (y_coord * width + x) * 4;
 
-                    const float weight = gaussian(j);
+                    const float weight = vertical_kernel[std::abs(j)];
                     color += glm::make_vec4(temp_image.data() + index) * weight;
                     weight_sum += weight;
                 }
