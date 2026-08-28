@@ -12,9 +12,9 @@ float luminance(vec3 rgb) {
     return dot(rgb, vec3(0.2126, 0.7152, 0.0722));
 }
 
-vec3 apply_saturation(vec3 rgb, float saturation) {
-    float luma = luminance(rgb);
-    return mix(vec3(luma), rgb, saturation);
+vec3 apply_saturation(vec3 rgb, float s) {
+    float Y = luminance(rgb);
+    return vec3(Y) + s * (rgb - vec3(Y));
 }
 
 vec3 apply_vibrance(vec3 rgb, float vibrance) {
