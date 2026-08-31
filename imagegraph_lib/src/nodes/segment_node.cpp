@@ -99,8 +99,7 @@ namespace imagegraph::nodes {
                 _mask_index_modified = true;
             }
 
-            const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
-            widgets::image_preview(_mask.id(), mask_size, preview_size);
+            widgets::image_preview(_mask, preview_size);
         }
         ImGui::EndGroup();
 

@@ -28,8 +28,9 @@ namespace imagegraph::nodes {
         auto texture_size = ImVec2(0, 0);
         auto texture_id = static_cast<GLuint>(0);
         if (current_texture) {
-            texture_size =
-                    ImVec2(static_cast<float>(current_texture->width()), static_cast<float>(current_texture->height()));
+            const auto width = static_cast<float>(current_texture->width());
+            const auto height = static_cast<float>(current_texture->height());
+            texture_size = {width, height};
             texture_id = current_texture->id();
         }
 

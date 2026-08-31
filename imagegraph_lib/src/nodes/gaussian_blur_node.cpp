@@ -30,8 +30,7 @@ namespace imagegraph::nodes {
             modified();
         }
 
-        const auto texture_size = ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
-        widgets::image_preview(_texture.id(), texture_size);
+        widgets::image_preview(_texture);
 
         end_node();
     }

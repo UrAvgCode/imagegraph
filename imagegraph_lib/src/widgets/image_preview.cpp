@@ -70,6 +70,16 @@ namespace imagegraph::widgets {
         draw_list->PopClipRect();
     }
 
+    void image_preview(const compute::Texture& texture, const ImVec2 widget_size) {
+        const auto texture_size = ImVec2(static_cast<float>(texture.width()), static_cast<float>(texture.height()));
+        image_preview(texture.id(), texture_size, widget_size);
+    }
+
+    void image_preview(const compute::Mask& mask, const ImVec2 widget_size) {
+        const auto mask_size = ImVec2(static_cast<float>(mask.width()), static_cast<float>(mask.height()));
+        image_preview(mask.id(), mask_size, widget_size);
+    }
+
     bool prompt_image_preview(const ImTextureRef texture, const ImVec2 texture_size, const ImVec2 widget_size,
                               std::vector<inference::PointPrompt>& prompts) {
         const auto window = ImGui::GetCurrentWindow();

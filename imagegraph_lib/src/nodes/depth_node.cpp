@@ -36,8 +36,7 @@ namespace imagegraph::nodes {
 
         widgets::indeterminate_progress_bar(_processing);
 
-        const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
-        widgets::image_preview(_mask.id(), mask_size);
+        widgets::image_preview(_mask);
 
         end_node();
     }
