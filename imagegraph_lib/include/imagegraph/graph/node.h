@@ -34,6 +34,9 @@ namespace imagegraph::graph {
         std::span<OutputPin> output_pins();
 
     protected:
+        void begin_node(const char*) const;
+        void end_node() const;
+
         ax::NodeEditor::NodeId _id;
 
         std::vector<InputPin> _input_pins;

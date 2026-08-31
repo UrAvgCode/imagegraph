@@ -13,56 +13,31 @@ namespace imagegraph::nodes {
     }
 
     void WhiteBalanceNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("White Balance");
 
-        ImGui::Text("White Balance");
+        constexpr float total_width = 200.0f;
+        constexpr float label_width = 85.0f;
+        constexpr float input_width = total_width - label_width;
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
+        ImGui::PushItemWidth(input_width);
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Temperature");
+        ImGui::SameLine(label_width);
+        if (ImGui::DragFloat("##temperature", &_temperature, 0.01, -1.0f, 1.0f, "%.2f")) {
+            modified();
         }
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-
-        ImGui::BeginGroup();
-        {
-            constexpr float total_width = 200.0f;
-            constexpr float label_width = 85.0f;
-            constexpr float input_width = total_width - label_width;
-
-            ImGui::PushItemWidth(input_width);
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Temperature");
-            ImGui::SameLine(label_width);
-            if (ImGui::DragFloat("##temperature", &_temperature, 0.01, -1.0f, 1.0f, "%.2f")) {
-                modified();
-            }
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Tint");
-            ImGui::SameLine(label_width);
-            if (ImGui::DragFloat("##tint", &_tint, 0.01, -1.0f, 1.0f, "%.2f")) {
-                modified();
-            }
-            ImGui::PopItemWidth();
-
-            const auto texture_size =
-                    ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
-            widgets::image_preview(_texture.id(), texture_size);
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Tint");
+        ImGui::SameLine(label_width);
+        if (ImGui::DragFloat("##tint", &_tint, 0.01, -1.0f, 1.0f, "%.2f")) {
+            modified();
         }
-        ImGui::EndGroup();
+        ImGui::PopItemWidth();
 
-        ImGui::SameLine();
+        const auto texture_size = ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
+        widgets::image_preview(_texture.id(), texture_size);
 
-        ImGui::BeginGroup();
-        for (auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void WhiteBalanceNode::evaluate() {

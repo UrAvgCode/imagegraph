@@ -17,49 +17,25 @@ namespace imagegraph::nodes {
     }
 
     void OutputNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("Output");
 
-        ImGui::Text("Output");
+        ImGui::PushItemWidth(200.0f);
+        ImGui::InputText("##name", &_name);
+        ImGui::PopItemWidth();
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
+        const auto current_texture = texture();
+
+        auto texture_size = ImVec2(0, 0);
+        auto texture_id = static_cast<GLuint>(0);
+        if (current_texture) {
+            texture_size =
+                    ImVec2(static_cast<float>(current_texture->width()), static_cast<float>(current_texture->height()));
+            texture_id = current_texture->id();
         }
-        ImGui::EndGroup();
 
-        ImGui::SameLine();
+        widgets::image_preview(texture_id, texture_size);
 
-        ImGui::BeginGroup();
-        {
-            ImGui::PushItemWidth(200.0f);
-            ImGui::InputText("##name", &_name);
-            ImGui::PopItemWidth();
-
-            const auto current_texture = texture();
-
-            auto texture_size = ImVec2(0, 0);
-            auto texture_id = static_cast<GLuint>(0);
-            if (current_texture) {
-                texture_size = ImVec2(static_cast<float>(current_texture->width()),
-                                      static_cast<float>(current_texture->height()));
-                texture_id = current_texture->id();
-            }
-
-            widgets::image_preview(texture_id, texture_size);
-        }
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-
-        ImGui::BeginGroup();
-        for (auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void OutputNode::evaluate() {

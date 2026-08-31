@@ -15,49 +15,25 @@ namespace imagegraph::nodes {
     }
 
     void MaskGaussianBlurNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("Mask Gaussian Blur");
 
-        ImGui::Text("Mask Gaussian Blur");
+        constexpr float total_width = 200.0f;
+        constexpr float label_width = 40.0f;
+        constexpr float input_width = total_width - label_width;
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Size");
+
+        ImGui::SameLine(label_width);
+        ImGui::SetNextItemWidth(input_width);
+        if (ImGui::DragInt2("##size", &_blur_size.x, 0.2, 0, 150)) {
+            modified();
         }
-        ImGui::EndGroup();
 
-        ImGui::SameLine();
+        const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
+        widgets::image_preview(_mask.id(), mask_size);
 
-        ImGui::BeginGroup();
-        {
-            constexpr float total_width = 200.0f;
-            constexpr float label_width = 40.0f;
-            constexpr float input_width = total_width - label_width;
-
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Size");
-
-            ImGui::SameLine(label_width);
-            ImGui::SetNextItemWidth(input_width);
-            if (ImGui::DragInt2("##size", &_blur_size.x, 0.2, 0, 150)) {
-                modified();
-            }
-
-            const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
-            widgets::image_preview(_mask.id(), mask_size);
-        }
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-
-        ImGui::BeginGroup();
-        for (auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void MaskGaussianBlurNode::evaluate() {

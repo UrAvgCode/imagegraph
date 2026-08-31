@@ -20,32 +20,12 @@ namespace imagegraph::nodes {
     }
 
     void HistogramEqualizationNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
-
-        ImGui::Text("Histogram Equalization");
-
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
+        begin_node("Histogram Equalization");
 
         const auto texture_size = ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
         widgets::image_preview(_texture.id(), texture_size);
 
-        ImGui::SameLine();
-
-        ImGui::BeginGroup();
-        for (const auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void HistogramEqualizationNode::evaluate() {

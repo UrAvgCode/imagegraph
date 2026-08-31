@@ -18,51 +18,26 @@ namespace imagegraph::nodes {
     }
 
     void MedianNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("Median");
 
-        ImGui::Text("Median");
+        constexpr float total_width = 200.0f;
+        constexpr float label_width = 50.0f;
+        constexpr float input_width = total_width - label_width;
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Radius");
+
+        ImGui::SameLine(label_width);
+        ImGui::SetNextItemWidth(input_width);
+        ImGui::SliderInt("##radius", &_radius, 0, static_cast<int>(_compute_programs.size() - 1), "%d px");
+        if (ImGui::IsItemDeactivatedAfterEdit()) {
+            modified();
         }
-        ImGui::EndGroup();
 
-        ImGui::SameLine();
+        const auto texture_size = ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
+        widgets::image_preview(_texture.id(), texture_size);
 
-        ImGui::BeginGroup();
-        {
-            constexpr float total_width = 200.0f;
-            constexpr float label_width = 50.0f;
-            constexpr float input_width = total_width - label_width;
-
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Radius");
-
-            ImGui::SameLine(label_width);
-            ImGui::SetNextItemWidth(input_width);
-            ImGui::SliderInt("##radius", &_radius, 0, static_cast<int>(_compute_programs.size() - 1), "%d px");
-            if (ImGui::IsItemDeactivatedAfterEdit()) {
-                modified();
-            }
-
-            const auto texture_size =
-                    ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
-            widgets::image_preview(_texture.id(), texture_size);
-        }
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-
-        ImGui::BeginGroup();
-        for (const auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void MedianNode::evaluate() {

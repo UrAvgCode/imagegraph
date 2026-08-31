@@ -13,56 +13,31 @@ namespace imagegraph::nodes {
     }
 
     void BrightnessContrastNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("Brightness/Contrast");
 
-        ImGui::Text("Brightness/Contrast");
+        constexpr float total_width = 200.0f;
+        constexpr float label_width = 80.0f;
+        constexpr float input_width = total_width - label_width;
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
+        ImGui::PushItemWidth(input_width);
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Brightness");
+        ImGui::SameLine(label_width);
+        if (ImGui::DragFloat("##brightness", &_brightness, 0.01, 0.0f, 0.0f, "%.2f")) {
+            modified();
         }
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-
-        ImGui::BeginGroup();
-        {
-            constexpr float total_width = 200.0f;
-            constexpr float label_width = 80.0f;
-            constexpr float input_width = total_width - label_width;
-
-            ImGui::PushItemWidth(input_width);
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Brightness");
-            ImGui::SameLine(label_width);
-            if (ImGui::DragFloat("##brightness", &_brightness, 0.01, 0.0f, 0.0f, "%.2f")) {
-                modified();
-            }
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Contrast");
-            ImGui::SameLine(label_width);
-            if (ImGui::DragFloat("##contrast", &_contrast, 0.01, 0.0f, 0.0f, "%.2f")) {
-                modified();
-            }
-            ImGui::PopItemWidth();
-
-            const auto texture_size =
-                    ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
-            widgets::image_preview(_texture.id(), texture_size);
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Contrast");
+        ImGui::SameLine(label_width);
+        if (ImGui::DragFloat("##contrast", &_contrast, 0.01, 0.0f, 0.0f, "%.2f")) {
+            modified();
         }
-        ImGui::EndGroup();
+        ImGui::PopItemWidth();
 
-        ImGui::SameLine();
+        const auto texture_size = ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
+        widgets::image_preview(_texture.id(), texture_size);
 
-        ImGui::BeginGroup();
-        for (auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void BrightnessContrastNode::evaluate() {

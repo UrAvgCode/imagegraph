@@ -13,50 +13,26 @@ namespace imagegraph::nodes {
     }
 
     void MaskGrowShrinkNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("Grow/Shrink Mask");
 
-        ImGui::Text("Grow/Shrink Mask");
+        constexpr float total_width = 200.0f;
+        constexpr float label_width = 50.0f;
+        constexpr float input_width = total_width - label_width;
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Amount");
+
+        ImGui::SameLine(label_width);
+        ImGui::SetNextItemWidth(input_width);
+        ImGui::SliderInt("##amount", &_amount, -32, 32, "%d px");
+        if (ImGui::IsItemDeactivatedAfterEdit()) {
+            modified();
         }
-        ImGui::EndGroup();
 
-        ImGui::SameLine();
+        const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
+        widgets::image_preview(_mask.id(), mask_size);
 
-        ImGui::BeginGroup();
-        {
-            constexpr float total_width = 200.0f;
-            constexpr float label_width = 50.0f;
-            constexpr float input_width = total_width - label_width;
-
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Amount");
-
-            ImGui::SameLine(label_width);
-            ImGui::SetNextItemWidth(input_width);
-            ImGui::SliderInt("##amount", &_amount, -32, 32, "%d px");
-            if (ImGui::IsItemDeactivatedAfterEdit()) {
-                modified();
-            }
-
-            const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
-            widgets::image_preview(_mask.id(), mask_size);
-        }
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-
-        ImGui::BeginGroup();
-        for (auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void MaskGrowShrinkNode::evaluate() {

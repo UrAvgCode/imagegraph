@@ -16,58 +16,33 @@ namespace imagegraph::nodes {
     }
 
     void BokehNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("Bokeh");
 
-        ImGui::Text("Bokeh");
+        constexpr float total_width = 200.0f;
+        constexpr float label_width = 50.0f;
+        constexpr float input_width = total_width - label_width;
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
+        ImGui::PushItemWidth(input_width);
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Focus");
+        ImGui::SameLine(label_width);
+        if (ImGui::DragFloat("##focus", &_focus, 0.01, 0.0f, 0.0f, "%.2f")) {
+            _focus = std::clamp(_focus, 0.0f, 1.0f);
+            modified();
         }
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-
-        ImGui::BeginGroup();
-        {
-            constexpr float total_width = 200.0f;
-            constexpr float label_width = 50.0f;
-            constexpr float input_width = total_width - label_width;
-
-            ImGui::PushItemWidth(input_width);
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Focus");
-            ImGui::SameLine(label_width);
-            if (ImGui::DragFloat("##focus", &_focus, 0.01, 0.0f, 0.0f, "%.2f")) {
-                _focus = std::clamp(_focus, 0.0f, 1.0f);
-                modified();
-            }
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Radius");
-            ImGui::SameLine(label_width);
-            if (ImGui::DragFloat("##radius", &_radius, 0.01, 0.0f, 0.0f, "%.2f")) {
-                _radius = std::clamp(_radius, 1.0f, 30.0f);
-                modified();
-            }
-            ImGui::PopItemWidth();
-
-            const auto texture_size =
-                    ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
-            widgets::image_preview(_texture.id(), texture_size);
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Radius");
+        ImGui::SameLine(label_width);
+        if (ImGui::DragFloat("##radius", &_radius, 0.01, 0.0f, 0.0f, "%.2f")) {
+            _radius = std::clamp(_radius, 1.0f, 30.0f);
+            modified();
         }
-        ImGui::EndGroup();
+        ImGui::PopItemWidth();
 
-        ImGui::SameLine();
+        const auto texture_size = ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
+        widgets::image_preview(_texture.id(), texture_size);
 
-        ImGui::BeginGroup();
-        for (auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void BokehNode::evaluate() {

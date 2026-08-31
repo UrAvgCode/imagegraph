@@ -13,49 +13,32 @@ namespace imagegraph::nodes {
     InputNode::InputNode() { _output_pins.emplace_back(graph::Pin::Type::Texture, this); }
 
     void InputNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("Input");
 
-        ImGui::Text("Input");
+        constexpr float total_width = 200.0f;
+        constexpr float button_width = 30.0f;
+        const float spacing = ImGui::GetStyle().ItemSpacing.x;
 
-        ImGui::BeginGroup();
-        {
-            constexpr float total_width = 200.0f;
-            constexpr float button_width = 30.0f;
-            const float spacing = ImGui::GetStyle().ItemSpacing.x;
-
-            ImGui::PushItemWidth(total_width - button_width - spacing);
-            if (ImGui::InputText("##path", &_path, ImGuiInputTextFlags_ReadOnly)) {
-                modified();
-            }
-            ImGui::PopItemWidth();
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("...", ImVec2(button_width, 19.0f))) {
-                auto path = platform::open_image_dialog();
-                if (!path.empty()) {
-                    _path = std::move(path);
-                    modified();
-                }
-            }
-
-            const auto texture_size =
-                    ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
-            widgets::image_preview(_texture.id(), texture_size);
+        ImGui::PushItemWidth(total_width - button_width - spacing);
+        if (ImGui::InputText("##path", &_path, ImGuiInputTextFlags_ReadOnly)) {
+            modified();
         }
-        ImGui::EndGroup();
+        ImGui::PopItemWidth();
 
         ImGui::SameLine();
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _output_pins) {
-            pin.draw();
+        if (ImGui::Button("...", ImVec2(button_width, 19.0f))) {
+            auto path = platform::open_image_dialog();
+            if (!path.empty()) {
+                _path = std::move(path);
+                modified();
+            }
         }
-        ImGui::EndGroup();
 
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        const auto texture_size = ImVec2(static_cast<float>(_texture.width()), static_cast<float>(_texture.height()));
+        widgets::image_preview(_texture.id(), texture_size);
+
+        end_node();
     }
 
     void InputNode::evaluate() {

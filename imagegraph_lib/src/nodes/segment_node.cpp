@@ -23,107 +23,88 @@ namespace imagegraph::nodes {
     }
 
     void SegmentNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("Segment");
+
+        constexpr auto preview_size = ImVec2{150.0f, 150.0f};
+        constexpr auto panel_width = preview_size.x;
+
+        ImGui::BeginGroup();
         {
-            ImGui::Text("Segment");
-
-            ImGui::BeginGroup();
-            for (const auto& pin: _input_pins) {
-                pin.draw();
+            ImGui::BeginDisabled(_prompts.empty());
+            if (ImGui::Button("Undo") && !_prompts.empty()) {
+                _prompts.pop_back();
+                _prompts_modified = true;
             }
-            ImGui::EndGroup();
-
-            constexpr auto preview_size = ImVec2{150.0f, 150.0f};
-            constexpr auto panel_width = preview_size.x;
-
             ImGui::SameLine();
-            ImGui::BeginGroup();
-            {
-                ImGui::BeginDisabled(_prompts.empty());
-                if (ImGui::Button("Undo") && !_prompts.empty()) {
-                    _prompts.pop_back();
-                    _prompts_modified = true;
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Clear") && !_prompts.empty()) {
-                    _prompts.clear();
-                    _prompts_modified = true;
-                }
-                ImGui::EndDisabled();
-
-                widgets::indeterminate_progress_bar(_processing, {panel_width, 13.0f});
-
-                const auto input_texture = _input_pins[0].texture();
-                const auto input_id = !input_texture ? GLuint{0} : input_texture->id();
-                const auto input_size = !input_texture ? ImVec2{}
-                                                       : ImVec2{static_cast<float>(input_texture->width()),
-                                                                static_cast<float>(input_texture->height())};
-
-                if (widgets::prompt_image_preview(input_id, input_size, preview_size, _prompts)) {
-                    _prompts_modified = true;
-                }
+            if (ImGui::Button("Clear") && !_prompts.empty()) {
+                _prompts.clear();
+                _prompts_modified = true;
             }
-            ImGui::EndGroup();
+            ImGui::EndDisabled();
 
-            ImGui::SameLine();
-            ImGui::BeginGroup();
-            {
-                ImGui::AlignTextToFramePadding();
-                ImGui::TextUnformatted("Threshold");
+            widgets::indeterminate_progress_bar(_processing, {panel_width, 13.0f});
 
-                const auto threshold_label_width = ImGui::GetItemRectSize().x;
-                const auto threshold_input_width =
-                        panel_width - threshold_label_width - ImGui::GetStyle().ItemSpacing.x;
+            const auto input_texture = _input_pins[0].texture();
+            const auto input_id = !input_texture ? GLuint{0} : input_texture->id();
+            const auto input_size = !input_texture ? ImVec2{}
+                                                   : ImVec2{static_cast<float>(input_texture->width()),
+                                                            static_cast<float>(input_texture->height())};
 
-                ImGui::SameLine();
-                ImGui::SetNextItemWidth(threshold_input_width);
-
-                if (ImGui::DragFloat("##threshold", &_threshold, 0.01, 0.0f, 0.0f, "%.2f")) {
-                    _threshold_modified = true;
-                }
-
-                auto mask_label = std::array<char, 32>{};
-                std::snprintf(mask_label.data(), mask_label.size(), "Mask %d / 3", _mask_index + 1);
-
-                const auto row_origin = ImGui::GetCursorPos();
-                const auto label_size = ImGui::CalcTextSize(mask_label.data());
-                const auto arrow_size = ImGui::GetFrameHeight();
-
-                const auto previous_position = ImVec2(row_origin.x, row_origin.y);
-                const auto label_position = ImVec2(row_origin.x + (panel_width - label_size.x) * 0.5f,
-                                                   row_origin.y + (arrow_size - label_size.y) * 0.5f);
-                const auto next_position = ImVec2(row_origin.x + panel_width - arrow_size, row_origin.y);
-
-                ImGui::SetCursorPos(previous_position);
-                if (ImGui::ArrowButton("##previous", ImGuiDir_Left)) {
-                    _mask_index = (_mask_index + 3 - 1) % 3;
-                    _mask_index_modified = true;
-                }
-
-                ImGui::SetCursorPos(label_position);
-                ImGui::TextUnformatted(mask_label.data());
-
-                ImGui::SetCursorPos(next_position);
-                if (ImGui::ArrowButton("##next", ImGuiDir_Right)) {
-                    _mask_index = (_mask_index + 1) % 3;
-                    _mask_index_modified = true;
-                }
-
-                const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
-                widgets::image_preview(_mask.id(), mask_size, preview_size);
+            if (widgets::prompt_image_preview(input_id, input_size, preview_size, _prompts)) {
+                _prompts_modified = true;
             }
-            ImGui::EndGroup();
-
-            ImGui::SameLine();
-            ImGui::BeginGroup();
-            for (auto& pin: _output_pins) {
-                pin.draw();
-            }
-            ImGui::EndGroup();
         }
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        ImGui::EndGroup();
+
+        ImGui::SameLine();
+        ImGui::BeginGroup();
+        {
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Threshold");
+
+            const auto threshold_label_width = ImGui::GetItemRectSize().x;
+            const auto threshold_input_width = panel_width - threshold_label_width - ImGui::GetStyle().ItemSpacing.x;
+
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(threshold_input_width);
+
+            if (ImGui::DragFloat("##threshold", &_threshold, 0.01, 0.0f, 0.0f, "%.2f")) {
+                _threshold_modified = true;
+            }
+
+            auto mask_label = std::array<char, 32>{};
+            std::snprintf(mask_label.data(), mask_label.size(), "Mask %d / 3", _mask_index + 1);
+
+            const auto row_origin = ImGui::GetCursorPos();
+            const auto label_size = ImGui::CalcTextSize(mask_label.data());
+            const auto arrow_size = ImGui::GetFrameHeight();
+
+            const auto previous_position = ImVec2(row_origin.x, row_origin.y);
+            const auto label_position = ImVec2(row_origin.x + (panel_width - label_size.x) * 0.5f,
+                                               row_origin.y + (arrow_size - label_size.y) * 0.5f);
+            const auto next_position = ImVec2(row_origin.x + panel_width - arrow_size, row_origin.y);
+
+            ImGui::SetCursorPos(previous_position);
+            if (ImGui::ArrowButton("##previous", ImGuiDir_Left)) {
+                _mask_index = (_mask_index + 3 - 1) % 3;
+                _mask_index_modified = true;
+            }
+
+            ImGui::SetCursorPos(label_position);
+            ImGui::TextUnformatted(mask_label.data());
+
+            ImGui::SetCursorPos(next_position);
+            if (ImGui::ArrowButton("##next", ImGuiDir_Right)) {
+                _mask_index = (_mask_index + 1) % 3;
+                _mask_index_modified = true;
+            }
+
+            const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
+            widgets::image_preview(_mask.id(), mask_size, preview_size);
+        }
+        ImGui::EndGroup();
+
+        end_node();
     }
 
     void SegmentNode::evaluate() {

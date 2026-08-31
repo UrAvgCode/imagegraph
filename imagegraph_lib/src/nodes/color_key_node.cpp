@@ -13,62 +13,38 @@ namespace imagegraph::nodes {
     }
 
     void ColorKeyNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
+        begin_node("Color Key");
 
-        ImGui::Text("Color Key");
+        constexpr float total_width = 200.0f;
+        constexpr float color_label_width = 37.0f;
+        constexpr float tolerance_label_width = 70.0f;
+        constexpr float color_input_width = total_width - color_label_width;
+        constexpr float tolerance_input_width = total_width - tolerance_label_width;
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
+        constexpr float max_tolerance = std::sqrt(3.0f);
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Color");
+
+        ImGui::SameLine(color_label_width);
+        ImGui::SetNextItemWidth(color_input_width);
+        if (ImGui::ColorEdit3("##key_color", &_key_color.r, ImGuiColorEditFlags_Float)) {
+            modified();
         }
-        ImGui::EndGroup();
 
-        ImGui::SameLine();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Tolerance");
 
-        ImGui::BeginGroup();
-        {
-            constexpr float total_width = 200.0f;
-            constexpr float color_label_width = 37.0f;
-            constexpr float tolerance_label_width = 70.0f;
-            constexpr float color_input_width = total_width - color_label_width;
-            constexpr float tolerance_input_width = total_width - tolerance_label_width;
-
-            constexpr float max_tolerance = std::sqrt(3.0f);
-
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Color");
-
-            ImGui::SameLine(color_label_width);
-            ImGui::SetNextItemWidth(color_input_width);
-            if (ImGui::ColorEdit3("##key_color", &_key_color.r, ImGuiColorEditFlags_Float)) {
-                modified();
-            }
-
-            ImGui::AlignTextToFramePadding();
-            ImGui::TextUnformatted("Tolerance");
-
-            ImGui::SameLine(tolerance_label_width);
-            ImGui::SetNextItemWidth(tolerance_input_width);
-            if (ImGui::SliderFloat("##tolerance", &_tolerance, 0.0f, max_tolerance, "%.3f")) {
-                modified();
-            }
-
-            const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
-            widgets::image_preview(_mask.id(), mask_size);
+        ImGui::SameLine(tolerance_label_width);
+        ImGui::SetNextItemWidth(tolerance_input_width);
+        if (ImGui::SliderFloat("##tolerance", &_tolerance, 0.0f, max_tolerance, "%.3f")) {
+            modified();
         }
-        ImGui::EndGroup();
 
-        ImGui::SameLine();
+        const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
+        widgets::image_preview(_mask.id(), mask_size);
 
-        ImGui::BeginGroup();
-        for (const auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void ColorKeyNode::evaluate() {

@@ -15,55 +15,31 @@ namespace imagegraph::nodes {
     }
 
     void DepthNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
-        {
-            ImGui::Text("Depth");
+        begin_node("Depth");
 
-            ImGui::BeginGroup();
-            for (const auto& pin: _input_pins) {
-                pin.draw();
-            }
-            ImGui::EndGroup();
+        constexpr float total_width = 200.0f;
+        constexpr float label_width = 35.0f;
+        constexpr float input_width = total_width - label_width;
 
-            ImGui::SameLine();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Size");
 
-            ImGui::BeginGroup();
-            {
-                constexpr float total_width = 200.0f;
-                constexpr float label_width = 35.0f;
-                constexpr float input_width = total_width - label_width;
-
-                ImGui::AlignTextToFramePadding();
-                ImGui::TextUnformatted("Size");
-
-                ImGui::SameLine(label_width);
-                ImGui::SetNextItemWidth(input_width);
-                if (ImGui::InputInt2("##output_size", _output_size.data())) {
-                    _output_size[0] = std::clamp((_output_size[0] / 14) * 14, 14, 2072);
-                    _output_size[1] = std::clamp((_output_size[1] / 14) * 14, 14, 2072);
-                }
-                if (ImGui::IsItemDeactivatedAfterEdit()) {
-                    modified();
-                }
-
-                widgets::indeterminate_progress_bar(_processing);
-
-                const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
-                widgets::image_preview(_mask.id(), mask_size);
-            }
-            ImGui::EndGroup();
-
-            ImGui::SameLine();
-
-            ImGui::BeginGroup();
-            for (auto& pin: _output_pins) {
-                pin.draw();
-            }
-            ImGui::EndGroup();
+        ImGui::SameLine(label_width);
+        ImGui::SetNextItemWidth(input_width);
+        if (ImGui::InputInt2("##output_size", _output_size.data())) {
+            _output_size[0] = std::clamp((_output_size[0] / 14) * 14, 14, 2072);
+            _output_size[1] = std::clamp((_output_size[1] / 14) * 14, 14, 2072);
         }
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        if (ImGui::IsItemDeactivatedAfterEdit()) {
+            modified();
+        }
+
+        widgets::indeterminate_progress_bar(_processing);
+
+        const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
+        widgets::image_preview(_mask.id(), mask_size);
+
+        end_node();
     }
 
     void DepthNode::evaluate() {

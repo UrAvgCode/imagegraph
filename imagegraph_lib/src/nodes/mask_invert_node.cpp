@@ -13,32 +13,12 @@ namespace imagegraph::nodes {
     }
 
     void MaskInvertNode::draw() {
-        ax::NodeEditor::BeginNode(_id);
-        ImGui::PushID(_id.AsPointer());
-
-        ImGui::Text("Invert Mask");
-
-        ImGui::BeginGroup();
-        for (const auto& pin: _input_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
+        begin_node("Invert Mask");
 
         const auto mask_size = ImVec2(static_cast<float>(_mask.width()), static_cast<float>(_mask.height()));
         widgets::image_preview(_mask.id(), mask_size);
 
-        ImGui::SameLine();
-
-        ImGui::BeginGroup();
-        for (auto& pin: _output_pins) {
-            pin.draw();
-        }
-        ImGui::EndGroup();
-
-        ImGui::PopID();
-        ax::NodeEditor::EndNode();
+        end_node();
     }
 
     void MaskInvertNode::evaluate() {
