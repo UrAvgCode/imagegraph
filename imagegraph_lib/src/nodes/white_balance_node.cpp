@@ -54,11 +54,6 @@ namespace imagegraph::nodes {
 
         const auto width = input_texture->width();
         const auto height = input_texture->height();
-        if (width == 0 || height == 0) {
-            _texture = compute::Texture();
-            _output_pins[0].set_texture(nullptr);
-            return;
-        }
 
         _texture.allocate(width, height);
 

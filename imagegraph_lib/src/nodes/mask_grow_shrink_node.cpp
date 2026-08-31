@@ -49,11 +49,6 @@ namespace imagegraph::nodes {
 
         const auto width = input_mask->width();
         const auto height = input_mask->height();
-        if (width == 0 || height == 0) {
-            _mask = compute::Mask();
-            _output_pins[0].set_mask(nullptr);
-            return;
-        }
 
         _mask.allocate(width, height);
 

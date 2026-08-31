@@ -37,7 +37,9 @@ namespace imagegraph::nodes {
 
         const auto width = base_texture->width();
         const auto height = base_texture->height();
-        if (width == 0 || height == 0 || width != blend_texture->width() || height != blend_texture->height()) {
+        if (width != blend_texture->width() || height != blend_texture->height()) {
+            _texture = compute::Texture();
+            _output_pins[0].set_texture(nullptr);
             return;
         }
 
