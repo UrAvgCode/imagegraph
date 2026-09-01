@@ -31,30 +31,35 @@ namespace imagegraph::nodes {
         _entries.emplace(type, entry);
         _types.emplace(typeid(NodeType), type);
 
-        if (!_category_types.contains(category)) {
+        if (!_category_items.contains(category)) {
             _categories.emplace_back(category);
         }
 
-        _category_types[category].emplace_back(type);
+        _category_items[category].emplace_back(type);
     }
+
+    void Registry::register_separator(const char* category) { _category_items.at(category).emplace_back(nullptr); }
 
     Registry::Registry() {
         register_node<InputNode>("input", "Input", "Input/Output");
         register_node<OutputNode>("output", "Output", "Input/Output");
 
-        register_node<BrightnessContrastNode>("brightness_contrast", "Brightness/Contrast", "Color");
-        register_node<ColorIntensityNode>("color_intensity", "Color Intensity", "Color");
-        register_node<WhiteBalanceNode>("white_balance", "White Balance", "Color");
-        register_node<HistogramEqualizationNode>("histogram_equalization", "Histogram Equalization", "Color");
+        register_node<BrightnessContrastNode>("brightness_contrast", "Brightness/Contrast", "Adjustments");
+        register_node<ColorIntensityNode>("color_intensity", "Color Intensity", "Adjustments");
+        register_node<WhiteBalanceNode>("white_balance", "White Balance", "Adjustments");
+        register_separator("Adjustments");
+        register_node<HistogramEqualizationNode>("histogram_equalization", "Histogram Equalization", "Adjustments");
 
-        register_node<GaussianBlurNode>("gaussian_blur", "Gaussian Blur", "Effects");
-        register_node<MedianNode>("median", "Median", "Effects");
-        register_node<BokehNode>("bokeh", "Bokeh", "Effects");
-        register_node<BlendNode>("blend", "Blend", "Effects");
+        register_node<GaussianBlurNode>("gaussian_blur", "Gaussian Blur", "Filters");
+        register_node<MedianNode>("median", "Median", "Filters");
+        register_node<BokehNode>("bokeh", "Bokeh", "Filters");
+
+        register_node<BlendNode>("blend", "Blend", "Compositing");
 
         register_node<DepthNode>("depth", "Depth", "Masks");
         register_node<SegmentNode>("segment", "Segment", "Masks");
         register_node<ColorKeyNode>("color_key", "Color Key", "Masks");
+        register_separator("Masks");
         register_node<MaskInvertNode>("mask_invert", "Invert Mask", "Masks");
         register_node<MaskGrowShrinkNode>("mask_grow_shrink", "Grow/Shrink Mask", "Masks");
         register_node<MaskGaussianBlurNode>("mask_gaussian_blur", "Mask Gaussian Blur", "Masks");
@@ -68,7 +73,7 @@ namespace imagegraph::nodes {
 
     std::span<const char* const> Registry::categories() const { return _categories; }
 
-    std::span<const char* const> Registry::category_types(const char* category) const {
-        return _category_types.at(category);
+    std::span<const char* const> Registry::category_items(const char* category) const {
+        return _category_items.at(category);
     }
 } // namespace imagegraph::nodes

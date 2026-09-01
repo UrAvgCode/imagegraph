@@ -240,9 +240,11 @@ namespace imagegraph {
                     continue;
                 }
 
-                for (const auto type: _registry.category_types(category)) {
-                    if (ImGui::MenuItem(_registry.label(type))) {
-                        const auto node = _graph->add_node(_registry.create(type));
+                for (const auto item: _registry.category_items(category)) {
+                    if (!item) {
+                        ImGui::Separator();
+                    } else if (ImGui::MenuItem(_registry.label(item))) {
+                        const auto node = _graph->add_node(_registry.create(item));
                         ax::NodeEditor::SetNodePosition(node->id(), open_popup_position);
                     }
                 }

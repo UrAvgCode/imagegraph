@@ -20,7 +20,7 @@ namespace imagegraph::nodes {
 
         std::span<const char* const> categories() const;
 
-        std::span<const char* const> category_types(const char*) const;
+        std::span<const char* const> category_items(const char*) const;
 
     private:
         using Factory = std::unique_ptr<graph::Node> (*)();
@@ -32,11 +32,12 @@ namespace imagegraph::nodes {
 
         template<typename NodeType>
         void register_node(const char*, const char* label, const char* category);
+        void register_separator(const char* category);
 
         std::unordered_map<std::string_view, Entry> _entries;
         std::unordered_map<std::type_index, const char*> _types;
 
         std::vector<const char*> _categories;
-        std::unordered_map<std::string_view, std::vector<const char*>> _category_types;
+        std::unordered_map<std::string_view, std::vector<const char*>> _category_items;
     };
 } // namespace imagegraph::nodes
