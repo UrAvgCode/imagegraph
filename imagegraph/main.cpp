@@ -123,8 +123,8 @@ static void setup_dockspace() {
 static void run(GLFWwindow* window) {
     auto graph = imagegraph::graph::Graph();
     auto node_editor = imagegraph::NodeEditor(&graph);
+    auto main_menu_bar = imagegraph::MainMenuBar(&node_editor);
     const auto output_view = imagegraph::OutputView(&graph);
-    const auto main_menu_bar = imagegraph::MainMenuBar(&node_editor);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();

@@ -7,10 +7,24 @@
 #include <cstdio>
 #include <fstream>
 
-namespace imagegraph {
-    MainMenuBar::MainMenuBar(NodeEditor* node_editor) : _node_editor(node_editor) {}
+namespace {
+    void control_description(const char* control, const char* description) {
+        constexpr float button_width = 140.0f;
 
-    void MainMenuBar::draw() const {
+        ImGui::BeginDisabled();
+        ImGui::Button(control, ImVec2(button_width, 0.0f));
+        ImGui::EndDisabled();
+
+        ImGui::SameLine();
+        ImGui::TextUnformatted(description);
+    }
+} // namespace
+
+namespace imagegraph {
+    MainMenuBar::MainMenuBar(NodeEditor* node_editor) :
+        _node_editor(node_editor), _show_help(false), _show_metrics(false) {}
+
+    void MainMenuBar::draw() {
         handle_shortcuts();
 
         if (ImGui::BeginMainMenuBar()) {
@@ -28,11 +42,50 @@ namespace imagegraph {
                 }
                 ImGui::EndMenu();
             }
+
+            if (ImGui::BeginMenu("Help")) {
+                ImGui::MenuItem("Controls", "F1", &_show_help);
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Debug")) {
+                ImGui::MenuItem("Metrics", "Ctrl+Shift+M", &_show_metrics);
+                ImGui::EndMenu();
+            }
+
             ImGui::EndMainMenuBar();
+        }
+
+        if (_show_help) {
+            draw_help_window();
+        }
+        if (_show_metrics) {
+            ImGui::ShowMetricsWindow(&_show_metrics);
         }
     }
 
-    void MainMenuBar::handle_shortcuts() const {
+    void MainMenuBar::draw_help_window() {
+        if (!ImGui::Begin("Controls", &_show_help, ImGuiWindowFlags_AlwaysAutoResize)) {
+            ImGui::End();
+            return;
+        }
+
+        ImGui::SeparatorText("Node Editor");
+        control_description("Mouse Wheel##node", "Zoom");
+        control_description("Right Mouse Drag##node", "Pan");
+        control_description("Right Mouse##node", "Open node menu");
+        control_description("Del##node", "Delete selected item");
+        control_description("F##node", "Center selected item");
+
+        ImGui::SeparatorText("Output View");
+        control_description("Mouse Wheel##output", "Zoom");
+        control_description("Right Mouse Drag##output", "Pan");
+        control_description("F##output", "Fit image to view");
+
+        ImGui::End();
+    }
+
+    void MainMenuBar::handle_shortcuts() {
         if (ImGui::GetIO().WantTextInput) {
             return;
         }
@@ -42,6 +95,13 @@ namespace imagegraph {
         }
         if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_S)) {
             save();
+        }
+
+        if (ImGui::IsKeyPressed(ImGuiKey_F1)) {
+            _show_help = !_show_help;
+        }
+        if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_M)) {
+            _show_metrics = !_show_metrics;
         }
     }
 
