@@ -18,6 +18,7 @@
 #include <imagegraph/nodes/mask_gaussian_blur_node.h>
 #include <imagegraph/nodes/mask_grow_shrink_node.h>
 #include <imagegraph/nodes/mask_invert_node.h>
+#include <imagegraph/nodes/mask_threshold_node.h>
 #include <imagegraph/nodes/segment_node.h>
 
 namespace imagegraph::nodes {
@@ -61,6 +62,7 @@ namespace imagegraph::nodes {
         register_node<ColorKeyNode>("color_key", "Color Key", "Masks");
         register_separator("Masks");
         register_node<MaskInvertNode>("mask_invert", "Invert Mask", "Masks");
+        register_node<MaskThresholdNode>("mask_threshold", "Threshold Mask", "Masks");
         register_node<MaskGrowShrinkNode>("mask_grow_shrink", "Grow/Shrink Mask", "Masks");
         register_node<MaskGaussianBlurNode>("mask_gaussian_blur", "Mask Gaussian Blur", "Masks");
     }
